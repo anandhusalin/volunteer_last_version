@@ -17,43 +17,39 @@ class Profile extends StatelessWidget {
         title: "PROFILE",
         icon2: Icons.search,
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: const [
-              ConstSize.kheight,
+      body: SingleChildScrollView(
+        child: Column(
+          children: const [
+            /// HELLO ANANDHU PART
+            ProfileSection1(),
 
-              /// HELLO ANANDHU PART
-              ProfileSection1(),
+            /// PROFLE, WISHLIST, SETTINGS, WISHLIST , SUPPORT PART
+            ProfileSection3(),
+            SizedBox(
+              height: 20,
+            ),
 
-              /// PROFLE, WISHLIST, SETTINGS, WISHLIST , SUPPORT PART
-              ProfileSection3(),
-              SizedBox(
-                height: 20,
-              ),
+            /// ON GOING SERVICE HEADING
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    'On Going Services',
+                    style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  )),
+            ),
 
-              /// ON GOING SERVICE HEADING
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'On Going Services',
-                      style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    )),
-              ),
+            SizedBox(
+              height: 20,
+            ),
 
-              SizedBox(
-                height: 20,
-              ),
-
-              /// POPULAR SERVICE LIST
-              ServiceList(),
-            ],
-          ),
+            /// POPULAR SERVICE LIST
+            ServiceList(),
+          ],
         ),
       ),
     );

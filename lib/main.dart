@@ -16,7 +16,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   HttpOverrides.global = MyHttpOverrides();
+
   await GetStorage.init();
+
   runApp(const MyApp());
 }
 
