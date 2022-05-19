@@ -1,66 +1,88 @@
-// class ViewAllModel {
-// 	int? status;
-// 	int? code;
-// 	String? message;
-// 	List<List>? data;
-// 	Misc? misc;
+// To parse this JSON data, do
+//
+//     final viewAllModel = viewAllModelFromJson(jsonString);
 
-// 	ViewAllModel({this.status, this.code, this.message, this.data, this.misc});
+import 'dart:convert';
 
-// 	ViewAllModel.fromJson(Map<String, dynamic> json) {
-// 		status = json['status'];
-// 		code = json['code'];
-// 		message = json['message'];
-// 		if (json['data'] != null) {
-// 			data = <List>[];
-// 			json['data'].forEach((v) { data!.add(new List.fromJson(v)); });
-// 		}
-// 		misc = json['misc'] != null ? new Misc.fromJson(json['misc']) : null;
-// 	}
+ViewAllModel viewAllModelFromJson(String str) =>
+    ViewAllModel.fromJson(json.decode(str));
 
-// 	Map<String, dynamic> toJson() {
-// 		final Map<String, dynamic> data = new Map<String, dynamic>();
-// 		data['status'] = this.status;
-// 		data['code'] = this.code;
-// 		data['message'] = this.message;
-// 		if (this.data != null) {
-//       data['data'] = this.data!.map((v) => v.toJson()).toList();
-//     }
-// 		if (this.misc != null) {
-//       data['misc'] = this.misc!.toJson();
-//     }
-// 		return data;
-// 	}
-// }
+String viewAllModelToJson(ViewAllModel data) => json.encode(data.toJson());
 
-// class Data {
+class ViewAllModel {
+  ViewAllModel({
+    this.status,
+    this.code,
+    this.message,
+    this.data,
+    this.misc,
+  });
 
+  int? status;
+  int? code;
+  String? message;
+  List<List<Datum>>? data;
+  Misc? misc;
 
-// 	Data({
+  factory ViewAllModel.fromJson(Map<String, dynamic> json) => ViewAllModel(
+        status: json["status"],
+        code: json["code"],
+        message: json["message"],
+        data: List<List<Datum>>.from(json["data"]
+            .map((x) => List<Datum>.from(x.map((x) => Datum.fromJson(x))))),
+        misc: Misc.fromJson(json["misc"]),
+      );
 
-//   });
+  Map<String, dynamic> toJson() => {
+        "status": status,
+        "code": code,
+        "message": message,
+        "data": List<dynamic>.from(
+            data!.map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
+        "misc": misc!.toJson(),
+      };
+}
 
-// 	Data.fromJson(Map<String, dynamic> json) {
-// 	}
+class Datum {
+  Datum({
+    this.id,
+    this.taskTitle,
+    this.estDuration,
+    this.imageName,
+  });
 
-// 	Map<String, dynamic> toJson() {
-// 		final Map<String, dynamic> data = new Map<String, dynamic>();
-// 		return data;
-// 	}
-// }
+  int? id;
+  String? taskTitle;
+  int? estDuration;
+  String? imageName;
 
-// class Misc {
-// 	String? imagePlaceholder;
+  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+        id: json["id"],
+        taskTitle: json["task_title"],
+        estDuration: json["est_duration"],
+        imageName: json["image_name"] == null ? null : json["image_name"],
+      );
 
-// 	Misc({this.imagePlaceholder});
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "task_title": taskTitle,
+        "est_duration": estDuration,
+        "image_name": imageName == null ? null : imageName,
+      };
+}
 
-// 	Misc.fromJson(Map<String, dynamic> json) {
-// 		imagePlaceholder = json['image_placeholder'];
-// 	}
+class Misc {
+  Misc({
+    this.imagePlaceholder,
+  });
 
-// 	Map<String, dynamic> toJson() {
-// 		final Map<String, dynamic> data = new Map<String, dynamic>();
-// 		data['image_placeholder'] = this.imagePlaceholder;
-// 		return data;
-// 	}
-// }
+  String? imagePlaceholder;
+
+  factory Misc.fromJson(Map<String, dynamic> json) => Misc(
+        imagePlaceholder: json["image_placeholder"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "image_placeholder": imagePlaceholder,
+      };
+}
