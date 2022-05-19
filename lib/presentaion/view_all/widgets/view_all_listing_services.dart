@@ -1,8 +1,8 @@
+import 'package:bloc_volunteer_service/model/view_all_service_model.dart';
+import 'package:bloc_volunteer_service/presentaion/nottifications/text_input.dart';
 import 'package:flutter/material.dart';
 
-import '../../../model/view_all_service_model.dart';
 import '../../../services/view_all_service.dart';
-import '../../nottifications/text_input.dart';
 import '../../service_info/screen_service_info.dart';
 
 class ViewAllServiceList extends StatefulWidget {
@@ -63,11 +63,15 @@ class _ServiceListState extends State<ViewAllServiceList> {
                     child: Row(children: [
                       SizedBox(
                         child: Image.network(
-                            _viewAllModel!.data![0][index].imageName != null
-                                ? _viewAllModel!.data![0][index].imageName
-                                    .toString()
-                                : _viewAllModel!.misc!.imagePlaceholder
-                                    .toString()),
+                          _viewAllModel!.data![0][index].imageName != null
+                              ? _viewAllModel!.data![0][index].imageName
+                                  .toString()
+                              : _viewAllModel!.misc!.imagePlaceholder
+                                  .toString(),
+                          // errorBuilder: (context, error, stackTrace) {
+                          //   return Icon(Icons.home);
+                          // },
+                        ),
                       ),
                       Expanded(
                         child: TextInput(

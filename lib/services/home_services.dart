@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 class PopularServiceService {
   List joji = [];
   Future<PopularServiceModel> getData() async {
+    var popularServiceModel;
     var response = await http.get(
         Uri.parse('https://volunteer.cyberfort.co.in/api/popularServices'));
     Map<String, dynamic> map = json.decode(response.body);
@@ -22,6 +23,7 @@ class PopularServiceService {
     // });
 
     var data = jsonDecode(response.body);
-    return PopularServiceModel.fromJson(data);
+    popularServiceModel = PopularServiceModel.fromJson(data);
+    return popularServiceModel;
   }
 }

@@ -60,14 +60,14 @@ class Datum {
         id: json["id"],
         taskTitle: json["task_title"],
         estDuration: json["est_duration"],
-        imageName: json["image_name"],
+        imageName: json["image_name"] == null ? null : json["image_name"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "task_title": taskTitle,
         "est_duration": estDuration,
-        "image_name": imageName,
+        "image_name": imageName == null ? null : imageName,
       };
 }
 

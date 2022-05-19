@@ -1,4 +1,5 @@
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
+import 'package:bloc_volunteer_service/presentaion/view_all/widgets/view_all_listing_services.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/service_list.dart';
 
@@ -75,8 +76,8 @@ class _ViewAllState extends State<ViewAll> {
                   fontSize: 28,
                   fontWeight: FontWeight.bold),
             ),
-            // const ViewAllServiceList(),
-            const ServiceList()
+            const ViewAllServiceList(),
+            // const ServiceList()
           ],
         ),
       ),
