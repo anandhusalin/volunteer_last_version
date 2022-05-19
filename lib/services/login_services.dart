@@ -15,9 +15,9 @@ class LoginService {
     );
 
     var data = jsonDecode(response.body);
-    print(response.body);
-    print("response");
-    print(response.body);
+    // print(response.body);
+    // print("response");
+    // print(response.body);
 
     if (response.statusCode == 200 && data['message'] == null) {
       return LoginResponse.fromJson(data);

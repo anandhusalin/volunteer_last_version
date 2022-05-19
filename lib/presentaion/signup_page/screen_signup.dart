@@ -171,7 +171,7 @@ class _SignUpState extends State<SignUp> {
                           signupRequest.phone = phoneController.text.trim();
                           SignUpService signUpService = SignUpService();
                           print("sign Up");
-                          print(signupRequest.name);
+                          // print(signupRequest.name);
                           signUpService.signup(signupRequest).then((value) {
                             setState(() {
                               isLoading = false;
