@@ -1,8 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+// import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:bloc_volunteer_service/core/constant.dart';
@@ -10,6 +12,7 @@ import 'package:bloc_volunteer_service/model/services_model.dart';
 import 'package:bloc_volunteer_service/presentaion/addtask/requirement_screen.dart';
 import 'package:bloc_volunteer_service/services/service_services.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
+import 'package:dio/dio.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({Key? key}) : super(key: key);
@@ -19,10 +22,68 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> {
-  /// MULTIPLE IMAGE PICKING NOT COMPLETED  (FUNCTION AND LISTS)  [
+  bool isLoading = false;
 
   List<Asset> images = <Asset>[];
   String _error = 'No Error Dectected';
+
+  List allImages = [];
+  late File imageFile;
+  final picker = ImagePicker();
+
+  Future<void> chooseImage() async {
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      imageFile = File(pickedFile.path);
+      setState(() {
+        allImages.add(imageFile);
+      });
+    }
+  }
+
+  uploadData() async {
+    setState(() {
+      isLoading = true;
+    });
+    List<MultipartFile> newList = [];
+    for (var img in allImages) {
+      if (img != "") {
+        String name = img.path.split('/').last;
+        var multipartFile = await MultipartFile.fromFile(
+          img.path,
+          filename: name,
+        );
+        newList.add(multipartFile);
+      }
+    }
+    FormData formData = FormData.fromMap({
+      "task_title": solutionController.text,
+      "task_desc": solutionDescriptionController.text,
+      "volunteer_limit": int.parse(_controller.text),
+      "issue_title": probleController.text,
+      "issue_loc": locationController.text,
+      "issue_desc": descripationController.text,
+      "est_duration": int.parse(estimatedControler.text),
+      "image[]": newList,
+    });
+
+    ServicesService servicesService = ServicesService();
+    servicesService.addTask(formData).then((value) {
+      setState(() {
+        isLoading = false;
+      });
+      // inspect(value);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => RequirementsScreen(
+                desc: solutionDescriptionController.text,
+                estDur: estimatedControler.text,
+                title: solutionController.text,
+                volLimit: _controller.text,
+              )));
+    });
+  }
 
   Widget buildGridView() {
     return GridView.count(
@@ -33,6 +94,35 @@ class _AddScreenState extends State<AddScreen> {
           asset: asset,
           width: 300,
           height: 300,
+        );
+      }),
+    );
+  }
+
+  Widget buildImageSelector() {
+    return GridView.count(
+      shrinkWrap: true,
+      crossAxisCount: 3,
+      crossAxisSpacing: 6.0,
+      mainAxisSpacing: 6.0,
+      physics: const NeverScrollableScrollPhysics(),
+      children: List.generate(6, (index) {
+        return GestureDetector(
+          onTap: chooseImage,
+          child: Container(
+            height: 90,
+            width: 90,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(width: 2, color: Colors.grey.shade400)),
+            child: (allImages.asMap().containsKey(index))
+                ? Image.file(allImages[index], fit: BoxFit.fill)
+                : const Icon(
+                    Icons.photo_camera_outlined,
+                    size: 40,
+                    color: primaryColor,
+                  ),
+          ),
         );
       }),
     );
@@ -74,74 +164,6 @@ class _AddScreenState extends State<AddScreen> {
   /// ]
 
   /// IMAGE PICKER SINGLE WAY  THERE ARE 6 FUNCTIONS FOR THE EACH IMAGE PICKER  ALSO 6 VARIABLES [
-
-  File? _images1;
-  File? _images2;
-  File? _images3;
-  File? _images4;
-  File? _images5;
-  File? _images6;
-
-  final _picker1 = ImagePicker();
-  final _picker2 = ImagePicker();
-  final _picker3 = ImagePicker();
-  final _picker4 = ImagePicker();
-  final _picker5 = ImagePicker();
-  final _picker6 = ImagePicker();
-  // Implementing the image picker
-
-  /// FUNCTION FOR IMAGE PICKER
-
-  Future<void> _openImagePicker1() async {
-    final XFile? pickedImage1 = await _picker1.pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedImage1 != null) {
-      setState(() {
-        _images1 = File(pickedImage1.path);
-      });
-    }
-  }
-
-  Future<void> _openImagePicker2() async {
-    final XFile? pickedImage2 =
-        await _picker2.pickImage(source: ImageSource.gallery);
-    if (pickedImage2 != null) {
-      setState(() {
-        _images2 = File(pickedImage2.path);
-      });
-    }
-  }
-
-  Future<void> _openImagePicker3() async {
-    final XFile? pickedImage3 =
-        await _picker3.pickImage(source: ImageSource.gallery);
-    if (pickedImage3 != null) {
-      setState(() {
-        _images3 = File(pickedImage3.path);
-      });
-    }
-  }
-
-  Future<void> _openImagePicker4() async {
-    final XFile? pickedImage4 =
-        await _picker4.pickImage(source: ImageSource.gallery);
-    if (pickedImage4 != null) {
-      setState(() {
-        _images4 = File(pickedImage4.path);
-      });
-    }
-  }
-
-  Future<void> _openImagePicker6() async {
-    final XFile? pickedImage6 =
-        await _picker6.pickImage(source: ImageSource.gallery);
-    if (pickedImage6 != null) {
-      setState(() {
-        _images6 = File(pickedImage6.path);
-      });
-    }
-  }
 
   ///  ]
 
@@ -211,61 +233,6 @@ class _AddScreenState extends State<AddScreen> {
             margin: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: const [
-                //     // Text(
-                //     //   'ISSUE',
-                //     //   style: TextStyle(
-                //     //       color: Colors.blue,
-                //     //       fontSize: 25,
-                //     //       fontWeight: FontWeight.w600),
-                //     // )
-                //   ],
-                // ),
-                // ConstSize.kheight,
-                // Inputfield(
-                //   contro: probleController2,
-                //   onc: (val) {
-                //     setState(() {
-                //       probleController.text = val;
-                //     });
-                //   },
-                //   height: 60,
-                //   title: 'Problem',
-                //   hint: 'Problem',
-                // ),
-                // ConstSize.kheight,
-                // Inputfield(
-                //   contro: locationController2,
-                //   onc: (val) {
-                //     setState(() {
-                //       locationController.text = val;
-                //     });
-                //   },
-                //   height: 60,
-                //   title: 'Location',
-                //   hint: 'Location',
-                // ),
-                // ConstSize.kheight,
-                // Inputfield(
-                //   contro: descripationController2,
-                //   onc: (val) {
-                //     setState(() {
-                //       descripationController.text = val;
-                //     });
-                //   },
-                //   height: 90,
-                //   title: 'Descripation',
-                //   hint: 'Descripation',
-                // ),
-                // ConstSize.kheight,
-
-                // const Divider(),
-                // const SizedBox(
-                //   height: 10,
-                // ),
-
                 /// SERVICE DETAILS PART
 
                 Container(
@@ -282,16 +249,6 @@ class _AddScreenState extends State<AddScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        // Inputfield(
-                        //     contro: solutionController,
-                        //     onc: (val) {
-                        //       setState(() {
-                        //         solutionController.text = val;
-                        //       });
-                        //     },
-                        //     height: 50,
-                        //     title: "Service Title",
-                        //     hint: 'Solution'),
                         const Align(
                             alignment: Alignment.topLeft,
                             child: Text("Service Title")),
@@ -396,184 +353,12 @@ class _AddScreenState extends State<AddScreen> {
                         ),
                         ConstSize.kheight,
 
-                        /// MULTIPLE IMAGE PICKER PART NOT COMPLETED [
-
-                        // images == null
-                        //     ? GridView.builder(
-                        //         physics: const NeverScrollableScrollPhysics(),
-                        //         shrinkWrap: true,
-                        //         itemCount: 6,
-
-                        //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-
-                        //                 crossAxisCount: 3,
-                        //                 crossAxisSpacing: 6.0,
-                        //                 mainAxisSpacing: 6.0),
-
-                        //         itemBuilder: (BuildContext context, int index) {
-
-                        //           return Container(
-
-                        //             height: 100,
-                        //             width: 110,
-                        //             decoration: BoxDecoration(
-                        //                 borderRadius: BorderRadius.circular(6),
-                        //                 border: Border.all(
-                        //                     width: 2,
-                        //                     color: Colors.grey.shade400)),
-                        //             child: const Center(
-                        //               child: Icon(
-                        //                 Icons.photo_camera_outlined,
-                        //                 size: 40,
-                        //                 color: primaryColor,
-                        //               ),
-                        //             ),
-                        //           );
-                        //         },
-                        //       )
-                        //     : buildGridView(),
-
-                        /// ]
-
-                        /// SINGLE IMAGE PICKER [
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      width: 2, color: Colors.grey.shade400)),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _openImagePicker1,
-                                  child: _images1 != null
-                                      ? Image.file(_images1!, fit: BoxFit.cover)
-                                      : const Icon(
-                                          Icons.photo_camera_outlined,
-                                          size: 40,
-                                          color: primaryColor,
-                                        ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      width: 2, color: Colors.grey.shade400)),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _openImagePicker2,
-                                  child: _images2 != null
-                                      ? Image.file(_images2!, fit: BoxFit.cover)
-                                      : const Icon(
-                                          Icons.photo_camera_outlined,
-                                          size: 40,
-                                          color: primaryColor,
-                                        ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      width: 2, color: Colors.grey.shade400)),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _openImagePicker3,
-                                  child: _images3 != null
-                                      ? Image.file(_images3!, fit: BoxFit.cover)
-                                      : const Icon(
-                                          Icons.photo_camera_outlined,
-                                          size: 40,
-                                          color: primaryColor,
-                                        ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        //  n-image picker
+                        buildImageSelector(),
+                        //end  n-image picker
 
                         const SizedBox(
                           height: 5,
-                        ),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      width: 2, color: Colors.grey.shade400)),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _openImagePicker3,
-                                  child: _images3 != null
-                                      ? Image.file(_images3!, fit: BoxFit.cover)
-                                      : const Icon(
-                                          Icons.photo_camera_outlined,
-                                          size: 40,
-                                          color: primaryColor,
-                                        ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      width: 2, color: Colors.grey.shade400)),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _openImagePicker4,
-                                  child: _images4 != null
-                                      ? Image.file(_images4!, fit: BoxFit.cover)
-                                      : const Icon(
-                                          Icons.photo_camera_outlined,
-                                          size: 40,
-                                          color: primaryColor,
-                                        ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      width: 2, color: Colors.grey.shade400)),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _openImagePicker6,
-                                  child: _images6 != null
-                                      ? Image.file(
-                                          _images6!,
-                                          fit: BoxFit.contain,
-                                        )
-                                      : const Icon(
-                                          Icons.photo_camera_outlined,
-                                          size: 40,
-                                          color: primaryColor,
-                                        ),
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),
@@ -858,6 +643,7 @@ class _AddScreenState extends State<AddScreen> {
                                       primary: Colors.blue),
                                   onPressed: () {
                                     hideWidget();
+                                    _controller.text = "1";
                                   },
                                   child: const Text(
                                     "ADD VOLUNTEER LIMIT",
@@ -877,6 +663,7 @@ class _AddScreenState extends State<AddScreen> {
                                       primary: Colors.red),
                                   onPressed: () {
                                     hideWidget();
+                                    _controller.text = "0";
                                   },
                                   child: const Text(
                                     "REMOVE VOLUNTEER LIMIT",
@@ -895,61 +682,43 @@ class _AddScreenState extends State<AddScreen> {
                 ConstSize.kheight2,
 
                 /// ADD TASK BUTTON
-
-                Container(
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
-                  height: 45,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.blue),
-                    onPressed: () async {
-                      if (solutionController.text.isNotEmpty &&
-                          solutionDescriptionController.text.isNotEmpty &&
-                          int.parse(_controller.text) > 0 &&
-                          estimatedControler.text.isNotEmpty &&
-                          probleController.text.isNotEmpty &&
-                          locationController.text.isNotEmpty &&
-                          descripationController.text.isNotEmpty) {
-                        setState(() {
-                          serviceModel.issueDesc = descripationController.text;
-                          serviceModel.issueLoc = locationController.text;
-                          serviceModel.issueTitle = probleController.text;
-                          serviceModel.estimatedTime =
-                              int.parse(estimatedControler.text);
-                          serviceModel.taskDesc =
-                              solutionDescriptionController.text;
-                          serviceModel.taskTitle = solutionController.text;
-                          serviceModel.volunteerLimit =
-                              int.parse(_controller.text);
-                        });
-                        print("##############");
-                        print(solutionController.text + " amina");
-
-                        ServicesService servicesService = ServicesService();
-                        servicesService.addForm(serviceModel).then((value) {
-                          print("***** Message ******");
-                          print(value.message);
-                          Get.to(() => RequirementsScreen(
-                                desc: solutionDescriptionController.text,
-                                estDur: estimatedControler.text,
-                                title: solutionController.text,
-                                volLimit: _controller.text,
-                              ));
-                        });
-                      } else {
-                        print("fill form %%%%%%%%%%%%%%%%%%%%%%%%%");
-                        print(solutionController.text + " aminaa");
-                        print(int.parse(_controller.text));
-                        print(solutionDescriptionController.text + " amifna");
-                      }
-                    },
-                    child: const Text(
-                      'ADD TASK',
-                      style: TextStyle(
-                          color: backgroundColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
+                Visibility(
+                    visible: isLoading,
+                    child: const CircularProgressIndicator(
+                      color: primaryColor,
+                    )),
+                Visibility(
+                  visible: !isLoading,
+                  child: Container(
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                    height: 45,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(primary: Colors.blue),
+                      onPressed: () async {
+                        if (solutionController.text.isNotEmpty &&
+                            solutionDescriptionController.text.isNotEmpty &&
+                            int.parse(_controller.text) > 0 &&
+                            estimatedControler.text.isNotEmpty &&
+                            probleController.text.isNotEmpty &&
+                            locationController.text.isNotEmpty &&
+                            descripationController.text.isNotEmpty) {
+                          uploadData();
+                        } else {
+                          print("fill form %%%%%%%%%%%%%%%%%%%%%%%%%");
+                          print(solutionController.text + " aminaa");
+                          print(int.parse(_controller.text));
+                          print(solutionDescriptionController.text + " amifna");
+                        }
+                      },
+                      child: const Text(
+                        'ADD TASK',
+                        style: TextStyle(
+                            color: backgroundColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      ),
                     ),
                   ),
                 ),

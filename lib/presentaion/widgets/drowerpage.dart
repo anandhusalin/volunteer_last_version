@@ -537,7 +537,9 @@ class _DrowerPageState extends State<DrowerPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const TaskPage()));
+                                      builder: (context) => TaskPage(
+                                            ServiceId: null,
+                                          )));
                             },
                             icon: const Icon(
                               Icons.category,

@@ -217,7 +217,10 @@ class _CategoryServiceListState extends State<CategoryServiceList> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const TaskPage()));
+                            builder: (context) => TaskPage(
+                                  ServiceId: categoryServiceListModel!
+                                      .data![0][index].id,
+                                )));
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

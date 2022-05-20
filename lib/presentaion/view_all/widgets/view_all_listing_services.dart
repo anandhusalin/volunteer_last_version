@@ -54,7 +54,9 @@ class _ServiceListState extends State<ViewAllServiceList> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const TaskPage()));
+                          builder: (context) => TaskPage(
+                                ServiceId: _viewAllModel!.data![0][index].id,
+                              )));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
