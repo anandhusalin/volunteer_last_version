@@ -43,12 +43,12 @@ class _ServiceListState extends State<ViewAllServiceList> {
   Widget build(BuildContext context) {
     return isLoading
         ? const CircularProgressIndicator()
-        : ListView.builder(
+        : GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: viewAll.length,
-            // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            //     crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
             itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -61,73 +61,47 @@ class _ServiceListState extends State<ViewAllServiceList> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    height: 150,
-                    child: Row(children: [
-                      SizedBox(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.black)),
+                    child: Column(children: [
+                      Expanded(
+                        flex: 3,
                         child: Image.network(
                           _viewAllModel!.data![0][index].imageName != null
                               ? _viewAllModel!.data![0][index].imageName
                                   .toString()
                               : _viewAllModel!.misc!.imagePlaceholder
                                   .toString(),
+                          fit: BoxFit.fill,
                           errorBuilder: (context, error, stackTrace) {
                             return const Icon(Icons.home);
                           },
                         ),
                       ),
                       Expanded(
-                        child: TextInput(
-                            colorOfText: Colors.blue,
-                            maxlines: true,
-                            size: 25,
-                            text1: _viewAllModel!.data![0][index].taskTitle!
-                                .toString()),
+                        flex: 1,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(10),
+                                  bottomRight: Radius.circular(10))),
+                          width: MediaQuery.of(context).size.width,
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 5, top: 3),
+                            child: TextInput(
+                                colorOfText: Colors.white,
+                                maxlines: true,
+                                size: 13,
+                                text1: _viewAllModel!.data![0][index].taskTitle!
+                                    .toString()),
+                          ),
+                        ),
                       )
                     ]),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.red),
-                        image: const DecorationImage(
-                            image: AssetImage("images/1.jpg"),
-                            fit: BoxFit.cover)),
                   ),
-                )
-                // Column(
-                //   children: [
-                //     Container(
-                //       decoration: BoxDecoration(
-                //           border: Border.all(color: Colors.grey),
-                //           borderRadius: const BorderRadius.only(
-                //             topLeft: Radius.circular(10),
-                //             topRight: Radius.circular(10),
-                //           )),
-                //       height: 147,
-                //       width: 160,
-                //       child: Image.network(
-                //           service!.data![0][index].imageName != null
-                //               ? service!.data![0][index].imageName.toString()
-                //               : service!.misc!.imagePlaceholder.toString()),
-                //     ),
-                //     Container(
-                //       height: 48,
-                //       width: 160,
-                //       decoration: const BoxDecoration(
-                //           color: primaryColor,
-                //           borderRadius: BorderRadius.only(
-                //               bottomLeft: Radius.circular(10),
-                //               bottomRight: Radius.circular(10))),
-                //       child: Center(
-                //           child: Padding(
-                //         padding: const EdgeInsets.all(5.0),
-                //         child: Text(
-                //           service!.data![0][index].taskTitle.toString(),
-                //           maxLines: 2,
-                //           style: const TextStyle(
-                //               color: Colors.white, fontSize: 15),
-                //         ),
-                //       )),
-                //     )
-                //   ],
-                // ),
-                ));
+                )));
   }
 }
