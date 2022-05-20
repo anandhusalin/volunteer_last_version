@@ -53,41 +53,50 @@ class _ServiceListState extends State<ServiceList> {
                         MaterialPageRoute(
                             builder: (context) => const TaskPage()));
                   },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.black)),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: Image.network(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.black)),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Image.network(
                                 homeModel!.data![0][index].imageName != null
                                     ? homeModel!.data![0][index].imageName
                                         .toString()
                                     : homeModel!.misc!.imagePlaceholder
-                                        .toString()),
-                          ),
-                          Container(
-                            decoration: const BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(10),
-                                    bottomRight: Radius.circular(10))),
-                            width: MediaQuery.of(context).size.width,
-                            height: 50,
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: TextInput(
-                                  colorOfText: Colors.white,
-                                  maxlines: true,
-                                  size: 13,
-                                  text1: homeModel!.data![0][index].taskTitle!
-                                      .toUpperCase()),
+                                        .toString(),
+                                fit: BoxFit.fill,
+                              ),
                             ),
-                          )
-                        ]),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(10),
+                                        bottomRight: Radius.circular(10))),
+                                width: MediaQuery.of(context).size.width,
+                                height: 50,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: TextInput(
+                                      colorOfText: Colors.white,
+                                      maxlines: true,
+                                      size: 13,
+                                      text1: homeModel!
+                                          .data![0][index].taskTitle!
+                                          .toUpperCase()),
+                                ),
+                              ),
+                            )
+                          ]),
+                    ),
                   ),
 
                   // Column(
