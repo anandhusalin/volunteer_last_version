@@ -1,5 +1,6 @@
 import 'package:bloc_volunteer_service/core/constant.dart';
 import 'package:bloc_volunteer_service/model/celebration_model.dart';
+import 'package:bloc_volunteer_service/presentaion/mainpage/widgets/bottom_nav.dart';
 
 import 'package:bloc_volunteer_service/presentaion/view_all/screen_view_all.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
@@ -203,10 +204,14 @@ class HomeSection3 extends StatelessWidget {
             children: [
               GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ViewAll()));
+                    indexChangeNotifier.value = 4;
+
+                    ChangeNotifier();
+
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => const ViewAll
                   },
                   child: const Text('View All')),
               const SizedBox(

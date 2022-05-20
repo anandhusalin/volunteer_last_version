@@ -37,7 +37,7 @@ class _TaskPageState extends State<TaskPage> {
             "//////////////////////////////////////////////////////////////////////////////////////");
         print(serviceInfoModel!.data![0].taskTitle.toString());
         print(
-            "/////////////////////////////////////////////////////END/////////////////////////////////");
+            "/////////////////////////////////////////////////////  END /////////////////////////////////");
       }
     });
   }
@@ -75,7 +75,7 @@ class _TaskPageState extends State<TaskPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Puthiyakavu Area Cleaning',
                         // serviceInfoModel!.data![0].taskTitle.toString(),
                         style: TextStyle(
@@ -232,7 +232,7 @@ class _TaskPageState extends State<TaskPage> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 15),
               child: const Text(
-                "haoe",
+                "Plant 200 trees in Puthiyakavu",
                 // serviceInfoModel!.data![0].taskDesc.toString(),
                 style: TextStyle(
                   color: Colors.black,

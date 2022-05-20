@@ -53,42 +53,41 @@ class _ServiceListState extends State<ServiceList> {
                         MaterialPageRoute(
                             builder: (context) => const TaskPage()));
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 150,
-                      child: Column(children: [
-                        // const SizedBox(
-                        //   height: 39,
-                        // ),
-                        SizedBox(
-                          height: 129.5,
-                          child: Image.network(homeModel!
-                                      .data![0][index].imageName !=
-                                  null
-                              ? homeModel!.data![0][index].imageName.toString()
-                              : homeModel!.misc!.imagePlaceholder.toString()),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          color: Colors.blue,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                top: 5, left: 8, right: 8, bottom: 5),
-                            child: TextInput(
-                                colorOfText: Colors.white,
-                                maxlines: true,
-                                size: 15,
-                                text1: homeModel!.data![0][index].taskTitle!
-                                    .toUpperCase()),
-                          ),
-                        )
-                      ]),
-                      decoration: BoxDecoration(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey),
-                      ),
-                    ),
+                        border: Border.all(color: Colors.black)),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Image.network(
+                                homeModel!.data![0][index].imageName != null
+                                    ? homeModel!.data![0][index].imageName
+                                        .toString()
+                                    : homeModel!.misc!.imagePlaceholder
+                                        .toString()),
+                          ),
+                          Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(10),
+                                    bottomRight: Radius.circular(10))),
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: TextInput(
+                                  colorOfText: Colors.white,
+                                  maxlines: true,
+                                  size: 13,
+                                  text1: homeModel!.data![0][index].taskTitle!
+                                      .toUpperCase()),
+                            ),
+                          )
+                        ]),
                   ),
 
                   // Column(

@@ -11,8 +11,11 @@ class ServicesService {
     print(".......................TOKEN...............");
 
     String token = await box.read('Token');
+
     print(token);
+
     print("bodydata********************");
+
     print(jsonEncode(serviceModel.toJson()));
 
     final response = await http.post(
