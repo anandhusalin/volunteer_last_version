@@ -98,44 +98,6 @@ class _ServiceListState extends State<ServiceList> {
                           ]),
                     ),
                   ),
-
-                  // Column(
-                  //   children: [
-                  //     Container(
-                  //       decoration: BoxDecoration(
-                  //           border: Border.all(color: Colors.grey),
-                  //           borderRadius: const BorderRadius.only(
-                  //             topLeft: Radius.circular(10),
-                  //             topRight: Radius.circular(10),
-                  //           )),
-                  //       height: 147,
-                  //       width: 160,
-                  //       child: Image.network(
-                  //           homeModel!.data![0][index].imageName != null
-                  //               ? homeModel!.data![0][index].imageName.toString()
-                  //               : homeModel!.misc!.imagePlaceholder.toString()),
-                  //     ),
-                  //     Container(
-                  //       height: 48,
-                  //       width: 160,
-                  //       decoration: const BoxDecoration(
-                  //           color: primaryColor,
-                  //           borderRadius: BorderRadius.only(
-                  //               bottomLeft: Radius.circular(10),
-                  //               bottomRight: Radius.circular(10))),
-                  //       child: Center(
-                  //           child: Padding(
-                  //         padding: const EdgeInsets.all(5.0),
-                  //         child: Text(
-                  //           homeModel!.data![0][index].taskTitle.toString(),
-                  //           maxLines: 2,
-                  //           style: const TextStyle(
-                  //               color: Colors.white, fontSize: 15),
-                  //         ),
-                  //       )),
-                  //     )
-                  //   ],
-                  // ),
                 ));
   }
 }
