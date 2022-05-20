@@ -75,10 +75,10 @@ class _TaskPageState extends State<TaskPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        // 'Puthiyakavu Area Cleaning',
-                        serviceInfoModel!.data![0].taskTitle.toString(),
-                        style: const TextStyle(
+                      const Text(
+                        'Puthiyakavu Area Cleaning',
+                        // serviceInfoModel!.data![0].taskTitle.toString(),
+                        style: TextStyle(
                             color: Colors.black,
                             fontSize: 25,
                             fontWeight: FontWeight.bold),

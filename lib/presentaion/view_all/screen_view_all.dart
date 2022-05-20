@@ -20,15 +20,20 @@ class _ViewAllState extends State<ViewAll> {
     return CarouselSlider(
         items: [
           GestureDetector(
-              onTap: () {}, child: BannerCard(url: 'images/Servicebnr.jpg')),
+              onTap: () {},
+              child: const BannerCard(url: 'images/Servicebnr.jpg')),
           GestureDetector(
-              onTap: () {}, child: BannerCard(url: 'images/Servicebnr.jpg')),
+              onTap: () {},
+              child: const BannerCard(url: 'images/Servicebnr.jpg')),
           GestureDetector(
-              onTap: () {}, child: BannerCard(url: 'images/Servicebnr.jpg')),
+              onTap: () {},
+              child: const BannerCard(url: 'images/Servicebnr.jpg')),
           GestureDetector(
-              onTap: () {}, child: BannerCard(url: 'images/Servicebnr.jpg')),
+              onTap: () {},
+              child: const BannerCard(url: 'images/Servicebnr.jpg')),
           GestureDetector(
-              onTap: () {}, child: BannerCard(url: 'images/Servicebnr.jpg')),
+              onTap: () {},
+              child: const BannerCard(url: 'images/Servicebnr.jpg')),
         ],
         options: CarouselOptions(
           height: 170,

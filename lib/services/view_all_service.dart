@@ -12,7 +12,7 @@ class ViewAllServices {
     print(map);
 
     var view = map['data'];
-    viewAll = view[0].map((entry) => (entry['task_title'])).tolist();
+    viewAll = view[0].map((entry) => (entry['task_title'])).toList();
 
     var data = jsonDecode(response.body);
     return ViewAllModel.fromJson(data);

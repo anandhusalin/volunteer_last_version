@@ -68,9 +68,9 @@ class _ServiceListState extends State<ViewAllServiceList> {
                                   .toString()
                               : _viewAllModel!.misc!.imagePlaceholder
                                   .toString(),
-                          // errorBuilder: (context, error, stackTrace) {
-                          //   return Icon(Icons.home);
-                          // },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.home);
+                          },
                         ),
                       ),
                       Expanded(
