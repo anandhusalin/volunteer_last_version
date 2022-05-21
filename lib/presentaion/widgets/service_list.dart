@@ -44,6 +44,7 @@ class _ServiceListState extends State<ServiceList> {
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: joji.length,
+
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
             itemBuilder: (context, index) => GestureDetector(
