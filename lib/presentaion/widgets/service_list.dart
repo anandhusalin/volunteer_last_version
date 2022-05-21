@@ -52,7 +52,9 @@ class _ServiceListState extends State<ServiceList> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const TaskPage()));
+                            builder: (context) => TaskPage(
+                                  ServiceId: homeModel!.data![0][index].id,
+                                )));
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

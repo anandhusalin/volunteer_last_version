@@ -7,11 +7,9 @@ import '../model/service_info_model.dart';
 class ServiceInfoService {
   List serviceList = [];
 
-  Future<ServiceInfoModel> getServiceInfo() async {
-
-    
-    var response = await http
-        .get(Uri.parse("https://volunteer.cyberfort.co.in/api/serviceInfo/3"));
+  Future<ServiceInfoModel> getServiceInfo(id) async {
+    var response = await http.get(
+        Uri.parse("https://volunteer.cyberfort.co.in/api/serviceInfo/$id"));
 
     print(".........................................");
     print(response.body);
