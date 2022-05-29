@@ -41,10 +41,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        scaffoldBackgroundColor: backgroundColor,
-        backgroundColor: backgroundColor,
-        primarySwatch: Colors.blue,
-      ),
+          scaffoldBackgroundColor: backgroundColor,
+          backgroundColor: backgroundColor,
+          primarySwatch: Colors.blue,
+          platform: TargetPlatform.iOS),
       home: const SplashScreen(),
     );
   }

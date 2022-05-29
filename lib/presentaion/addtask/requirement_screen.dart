@@ -15,9 +15,6 @@ import '../widgets/inputfield.dart';
 class RequirementsScreen extends StatefulWidget {
   final String title;
   final String desc;
-  // final String issuetitle;
-  // final String issueDesc;
-  // final String issueLoc;
   final String estDur;
   final String volLimit;
 
@@ -25,9 +22,6 @@ class RequirementsScreen extends StatefulWidget {
     Key? key,
     required this.title,
     required this.desc,
-    // required this.issuetitle,
-    // required this.issueDesc,
-    // required this.issueLoc,
     required this.estDur,
     required this.volLimit,
   }) : super(key: key);

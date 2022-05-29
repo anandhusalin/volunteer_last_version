@@ -1,17 +1,17 @@
 // To parse this JSON data, do
 //
-//     final getServiceByCategoryModel = getServiceByCategoryModelFromJson(jsonString);
+//     final celebrationSliderModel = celebrationSliderModelFromJson(jsonString);
 
 import 'dart:convert';
 
-GetServiceByCategoryModel getServiceByCategoryModelFromJson(String str) =>
-    GetServiceByCategoryModel.fromJson(json.decode(str));
+CelebrationSliderModel celebrationSliderModelFromJson(String str) =>
+    CelebrationSliderModel.fromJson(json.decode(str));
 
-String getServiceByCategoryModelToJson(GetServiceByCategoryModel data) =>
+String celebrationSliderModelToJson(CelebrationSliderModel data) =>
     json.encode(data.toJson());
 
-class GetServiceByCategoryModel {
-  GetServiceByCategoryModel({
+class CelebrationSliderModel {
+  CelebrationSliderModel({
     this.status,
     this.code,
     this.message,
@@ -25,8 +25,8 @@ class GetServiceByCategoryModel {
   List<Datum>? data;
   Misc? misc;
 
-  factory GetServiceByCategoryModel.fromJson(Map<String, dynamic> json) =>
-      GetServiceByCategoryModel(
+  factory CelebrationSliderModel.fromJson(Map<String, dynamic> json) =>
+      CelebrationSliderModel(
         status: json["status"],
         code: json["code"],
         message: json["message"],
@@ -45,25 +45,33 @@ class GetServiceByCategoryModel {
 
 class Datum {
   Datum({
-    this.id,
+    this.userId,
     this.name,
-    this.imageName,
+    this.serviceId,
+    this.taskTitle,
+    this.taskDesc,
   });
 
-  int? id;
+  int? userId;
   String? name;
-  String? imageName;
+  int? serviceId;
+  String? taskTitle;
+  String? taskDesc;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        id: json["id"],
+        userId: json["user_id"],
         name: json["name"],
-        imageName: json["image_name"],
+        serviceId: json["service_id"],
+        taskTitle: json["task_title"],
+        taskDesc: json["task_desc"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "user_id": userId,
         "name": name,
-        "image_name": imageName,
+        "service_id": serviceId,
+        "task_title": taskTitle,
+        "task_desc": taskDesc,
       };
 }
 

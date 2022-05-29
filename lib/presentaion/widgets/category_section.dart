@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,253 +22,167 @@ class CategorySection extends StatefulWidget {
 }
 
 class _CategorySectionState extends State<CategorySection> {
-  //  final GetServiceByCategoryServices _getservices =
-  //      GetServiceByCategoryServices();
+  final CategoryServiceListService categoryServiceList =
+      CategoryServiceListService();
   final GetServiceByCategoryServices categoryService =
       GetServiceByCategoryServices();
-  bool isLoading = true;
+  late Future<GetServiceByCategoryModel> categoryList;
+  late Future<CategoryServiceListModel> categoryServiceListModel;
 
   GetServiceByCategoryModel? service;
   List categories = [];
+  int currentIndex = 0;
   @override
   void initState() {
     super.initState();
-    categoryService.getDataCategories().then((value) {
-      print('value');
-      print(value);
-      setState(() {
-        service = value;
-        isLoading = false;
-        categories = categoryService.Categories;
-      });
-    });
+    categoryList = categoryService.getDataCategories();
   }
 
-  int position = 0;
-  List<ListItem> listItem = [
-    ListItem(
-        isSelected: true, icon: FontAwesomeIcons.school, tiitle: " Social "),
-    ListItem(isSelected: false, icon: Icons.forest, tiitle: " Environment"),
-    ListItem(
-        isSelected: false, icon: FontAwesomeIcons.hospital, tiitle: "Medical"),
-    ListItem(
-        isSelected: false, icon: FontAwesomeIcons.flag, tiitle: " Political"),
-    ListItem(
-        isSelected: false, icon: Icons.family_restroom, tiitle: " Charity"),
-  ];
+  int position = 1;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Text(service!.data![0][2].name.toString()),
-        // Text(categoryService!.data![0].toString()),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SizedBox(
-            height: 100,
-            width: MediaQuery.of(context).size.width,
-            child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: listItem.length,
-                itemBuilder: (_, index) {
-                  return Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          for (int i = 0; i < listItem.length; i++) {
-                            setState(() {
-                              position = index;
-                              if (index == i) {
-                                listItem[index].isSelected = true;
-                              } else {
-                                listItem[i].isSelected = false;
-                              }
-                            });
-                          }
-                        },
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: listItem[index].isSelected
-                                ? primaryColor
-                                : backgroundColor,
-                          ),
-                          child: Center(
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 20,
+    return FutureBuilder<GetServiceByCategoryModel>(
+        future: categoryList,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data!.data;
+            currentIndex == 0 ? (position = data![0].id!) : 0;
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Container(
+                    height: 100,
+                    width: MediaQuery.of(context).size.width,
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: data!.length,
+                        itemBuilder: (_, index) {
+                          var item = data[index];
+                          return Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    currentIndex = index;
+                                    position = item.id!;
+                                  });
+                                },
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: currentIndex == index
+                                        ? primaryColor
+                                        : backgroundColor,
+                                  ),
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Image.network(
+                                          '${item.imageName}',
+                                          height: 35,
+                                          width: 35,
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text('${item.name}')
+                                        // Text(service!.data![0][index].name.toString())
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                Icon(listItem[index].icon),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Text(listItem[index].tiitle)
-                                // Text(service!.data![0][index].name.toString())
-                              ],
-                            ),
+                              ),
+                            ],
+                          );
+                        }),
+                  ),
+                ),
+                FutureBuilder<CategoryServiceListModel>(
+                    future:
+                        categoryServiceList.getCategoryServiceList(position),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData &&
+                          snapshot.data!.data![0].isNotEmpty) {
+                        return categorizedWidget(snapshot.data!);
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else {
+                        return Container(
+                          padding: EdgeInsets.symmetric(vertical: 50),
+                          child: Text('No Data Found!'),
+                        );
+                      }
+                    }),
+              ],
+            );
+          } else {
+            return SizedBox();
+          }
+        });
+  }
+
+  Widget categorizedWidget(item) {
+    return GridView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: item.data[0].length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
+        itemBuilder: (context, index) => GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            TaskPage(ServiceId: item.data![0][index].id)));
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black)),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Image.network(
+                            item.data[0][index].imageName != null
+                                ? item.data[0][index].imageName.toString()
+                                : item.misc!.imagePlaceholder.toString(),
+                            fit: BoxFit.fill,
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                }),
-          ),
-        ),
-
-        Visibility(
-          child: CategoryServiceList(
-            number: position + 1,
-          ),
-          visible: position != -1 && position == 0,
-        ),
-
-        Visibility(
-            visible: position != -1 && position == 1,
-            child: CategoryServiceList(
-              number: position + 1,
-            )),
-        Visibility(
-            visible: position != -1 && position == 2,
-            child: CategoryServiceList(
-              number: position + 1,
-            )),
-        Visibility(
-            visible: position != -1 && position == 3,
-            child: CategoryServiceList(
-              number: position + 1,
-            )),
-        Visibility(
-          visible: position != -1 && position == 4,
-          child: CategoryServiceList(
-            number: position + 1,
-          ),
-        ),
-        Visibility(
-            visible: position != -1 && position == 5,
-            child: CategoryServiceList(
-              number: position + 1,
-            )),
-        Visibility(
-            visible: position != -1 && position == 6,
-            child: CategoryServiceList(
-              number: position + 1,
-            )),
-      ],
-    );
-  }
-}
-
-class ListItem {
-  String tiitle;
-  IconData icon;
-  bool isSelected;
-  ListItem(
-      {required this.icon, required this.tiitle, required this.isSelected});
-}
-
-class CategoryServiceList extends StatefulWidget {
-  final int number;
-  const CategoryServiceList({
-    required this.number,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<CategoryServiceList> createState() => _CategoryServiceListState();
-}
-
-class _CategoryServiceListState extends State<CategoryServiceList> {
-  final CategoryServiceListService categoryService =
-      CategoryServiceListService();
-  bool isLoading = true;
-
-  CategoryServiceListModel? categoryServiceListModel;
-  List categoryServiceList = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    categoryService.getCategoryServiceList(widget.number).then((value) {
-      setState(() {
-        categoryServiceListModel = value;
-
-        isLoading = false;
-
-        categoryServiceList = categoryService.categoryServiceList;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return isLoading
-        ? const CircularProgressIndicator()
-        : GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: categoryServiceList.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
-            itemBuilder: (context, index) => GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TaskPage(
-                                  ServiceId: categoryServiceListModel!
-                                      .data![0][index].id,
-                                )));
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.black)),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: Image.network(
-                                categoryServiceListModel!
-                                            .data![0][index].imageName !=
-                                        null
-                                    ? categoryServiceListModel!
-                                        .data![0][index].imageName
-                                        .toString()
-                                    : categoryServiceListModel!
-                                        .misc!.imagePlaceholder
-                                        .toString(),
-                                fit: BoxFit.fill,
-                              ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            color: Colors.blue,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 5, left: 8, right: 8, bottom: 5),
+                              child: TextInput(
+                                  colorOfText: Colors.white,
+                                  maxlines: true,
+                                  size: 15,
+                                  text1: item.data![0][index].taskTitle!
+                                      .toUpperCase()),
                             ),
-                            Expanded(
-                              flex: 1,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                color: Colors.blue,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 5, left: 8, right: 8, bottom: 5),
-                                  child: TextInput(
-                                      colorOfText: Colors.white,
-                                      maxlines: true,
-                                      size: 15,
-                                      text1: categoryServiceListModel!
-                                          .data![0][index].taskTitle!
-                                          .toUpperCase()),
-                                ),
-                              ),
-                            )
-                          ]),
-                    ),
-                  ),
-                ));
+                          ),
+                        )
+                      ]),
+                ),
+              ),
+            ));
   }
 }

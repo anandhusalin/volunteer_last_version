@@ -11,14 +11,14 @@ class CategoryServiceListService {
         'https://volunteer.cyberfort.co.in/api/servicesByCategory/$value'));
     Map<String, dynamic> map = json.decode(response.body);
 
-    print(map);
-    var categoryService = map['data'];
-    print(categoryService);
-    print(categoryService[0]);
-    categoryServiceList =
-        categoryService[0].map((entry) => (entry['task_title'])).toList();
+    // print(map);
+    // var categoryService = map['data'];
+    // print(categoryService);
+    // print(categoryService[0]);
+    // categoryServiceList =
+    //     categoryService[0].map((entry) => (entry['task_title'])).toList();
 
-    print(categoryServiceList);
+    // print(categoryServiceList);
     // setState(() {
     //   joji1.add(joji);
     // });

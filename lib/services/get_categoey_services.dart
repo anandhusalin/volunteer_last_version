@@ -11,13 +11,13 @@ class GetServiceByCategoryServices {
         .get(Uri.parse('https://volunteer.cyberfort.co.in/api/getCategories'));
     Map<String, dynamic> map = json.decode(response.body);
 
-    print(map);
-    var cate = map['data'];
-    print(cate);
-    print(cate[0]);
-    Categories = cate[0].map((entry) => (entry['name'])).toList();
+    // print(map);
+    // var cate = map['data'];
+    // print(cate);
+    // print(cate[0]);
+    // // Categories = cate[0].map((entry) => (entry['name'])).toList();
 
-    print(Categories);
+    // print(Categories);
 
     var data = jsonDecode(response.body);
     return GetServiceByCategoryModel.fromJson(data);

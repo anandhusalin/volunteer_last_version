@@ -1,11 +1,14 @@
+import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class BannerCard extends StatelessWidget {
+  final item;
   final String url;
   const BannerCard({
     required this.url,
     Key? key,
+    this.item,
   }) : super(key: key);
 
   @override
@@ -34,37 +37,44 @@ class BannerCard extends StatelessWidget {
               )),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Padding(
-                padding: EdgeInsets.only(left: 15, right: 10),
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 15),
+                alignment: Alignment.topLeft,
+                height: 40,
+                width: 170,
                 child: Text(
-                  "Bhama",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                      fontFamily: "Poppins"),
+                  '${item.name}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 26,
+                    fontFamily: "Poppins",
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 15, right: 10),
+              Container(
+                padding: EdgeInsets.only(left: 15),
+                width: 170,
                 child: Text(
-                  "Task Title",
-                  style: TextStyle(
+                  '${item.taskTitle}',
+                  style: const TextStyle(
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                       fontFamily: "Poppins"),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 15, right: 10),
+              Container(
+                padding: EdgeInsets.only(left: 15),
+                width: 170,
                 child: Text(
-                  "Description",
-                  style: TextStyle(
+                  '${item.taskDesc}',
+                  style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                      fontSize: 12,
                       fontFamily: "Poppins"),
                 ),
               )

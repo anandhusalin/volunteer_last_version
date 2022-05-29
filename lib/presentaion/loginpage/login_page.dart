@@ -154,7 +154,7 @@ class _LoginState extends State<Login> {
                                   box.write('password',
                                       passwordController.text.trim());
                                   box.write('user', 'value');
-
+                                  box.write('user_id', value.data!.id);
                                   box.write('Token', value.data!.apiToken);
 
                                   Navigator.pushReplacement(

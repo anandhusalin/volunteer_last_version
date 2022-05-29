@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 // import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
@@ -11,7 +10,7 @@ import 'package:bloc_volunteer_service/core/constant.dart';
 import 'package:bloc_volunteer_service/model/services_model.dart';
 import 'package:bloc_volunteer_service/presentaion/addtask/requirement_screen.dart';
 import 'package:bloc_volunteer_service/services/service_services.dart';
-import 'package:multi_image_picker2/multi_image_picker2.dart';
+// import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:dio/dio.dart';
 
 class AddScreen extends StatefulWidget {
@@ -24,7 +23,7 @@ class AddScreen extends StatefulWidget {
 class _AddScreenState extends State<AddScreen> {
   bool isLoading = false;
 
-  List<Asset> images = <Asset>[];
+  // List<Asset> images = <Asset>[];
   String _error = 'No Error Dectected';
 
   List allImages = [];
@@ -85,19 +84,19 @@ class _AddScreenState extends State<AddScreen> {
     });
   }
 
-  Widget buildGridView() {
-    return GridView.count(
-      crossAxisCount: 3,
-      children: List.generate(images.length, (index) {
-        Asset asset = images[index];
-        return AssetThumb(
-          asset: asset,
-          width: 300,
-          height: 300,
-        );
-      }),
-    );
-  }
+  // Widget buildGridView() {
+  //   return GridView.count(
+  //     crossAxisCount: 3,
+  //     children: List.generate(images.length, (index) {
+  //       Asset asset = images[index];
+  //       return AssetThumb(
+  //         asset: asset,
+  //         width: 300,
+  //         height: 300,
+  //       );
+  //     }),
+  //   );
+  // }
 
   Widget buildImageSelector() {
     return GridView.count(
@@ -128,38 +127,38 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Future<void> loadAssets() async {
-    List<Asset> resultList = <Asset>[];
-    String error = 'No Error Detected';
+  // Future<void> loadAssets() async {
+  //   List<Asset> resultList = <Asset>[];
+  //   String error = 'No Error Detected';
 
-    try {
-      resultList = await MultiImagePicker.pickImages(
-        maxImages: 6,
-        enableCamera: true,
-        selectedAssets: images,
-        cupertinoOptions: const CupertinoOptions(
-          takePhotoIcon: "chat",
-          doneButtonTitle: "Fatto",
-        ),
-        materialOptions: const MaterialOptions(
-          actionBarColor: "#abcdef",
-          actionBarTitle: "Example App",
-          allViewTitle: "All Photos",
-          useDetailsView: false,
-          selectCircleStrokeColor: "#000000",
-        ),
-      );
-    } on Exception catch (e) {
-      error = e.toString();
-    }
+  //   try {
+  //     resultList = await MultiImagePicker.pickImages(
+  //       maxImages: 6,
+  //       enableCamera: true,
+  //       selectedAssets: images,
+  //       cupertinoOptions: const CupertinoOptions(
+  //         takePhotoIcon: "chat",
+  //         doneButtonTitle: "Fatto",
+  //       ),
+  //       materialOptions: const MaterialOptions(
+  //         actionBarColor: "#abcdef",
+  //         actionBarTitle: "Example App",
+  //         allViewTitle: "All Photos",
+  //         useDetailsView: false,
+  //         selectCircleStrokeColor: "#000000",
+  //       ),
+  //     );
+  //   } on Exception catch (e) {
+  //     error = e.toString();
+  //   }
 
-    if (!mounted) return;
+  //   if (!mounted) return;
 
-    setState(() {
-      images = resultList;
-      _error = error;
-    });
-  }
+  //   setState(() {
+  //     images = resultList;
+  //     _error = error;
+  //   });
+  // }
 
   /// ]
 

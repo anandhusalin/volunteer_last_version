@@ -147,7 +147,7 @@ class _TaskPageState extends State<TaskPage> {
                                 // serviceInfoModel!.data![0].taskTitle.toString(),
                                 style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 25,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.bold),
                               ),
                               Row(
@@ -178,8 +178,10 @@ class _TaskPageState extends State<TaskPage> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                const Chat()));
+                                            builder: (context) => Chat(
+                                                  serviceId: data.id,
+                                                  serviceTitle: data.taskTitle,
+                                                )));
                                   },
                                   child: const Text(
                                     'VOLUNTEER',

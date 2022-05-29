@@ -1,22 +1,19 @@
-
 import 'package:flutter/material.dart';
 
 class Inputfield extends StatelessWidget {
-  const Inputfield({
+  Inputfield({
     Key? key,
     required this.height,
-
     required this.controller,
-
     required this.title,
-
-
     required this.hint,
+    this.keyBoardType = TextInputType.multiline,
   }) : super(key: key);
   final double height;
   final TextEditingController controller;
   final String title;
   final String hint;
+  TextInputType keyBoardType;
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +30,14 @@ class Inputfield extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               border: Border.all(width: 2, color: Colors.grey)),
           child: Padding(
-
-            padding: const EdgeInsets.only(left:10 ),
+            padding: const EdgeInsets.only(left: 10),
             child: TextFormField(
-              keyboardType: TextInputType.multiline,
+              keyboardType: keyBoardType,
               maxLines: null,
               controller: controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
+                hintText: hint,
               ),
             ),
           ),

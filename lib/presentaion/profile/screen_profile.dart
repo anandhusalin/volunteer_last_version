@@ -1,14 +1,23 @@
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:bloc_volunteer_service/core/constant.dart';
+import 'package:bloc_volunteer_service/model/profile/profileModel.dart';
 import 'package:bloc_volunteer_service/presentaion/profile/widgets/profile_button.dart';
 
 import 'package:bloc_volunteer_service/presentaion/widgets/service_list.dart';
+import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:flutter/material.dart';
 import '../view_profile/view_profile.dart';
 import '../widgets/app_bar_widgets.dart';
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   const Profile({Key? key, required List user}) : super(key: key);
+
+  @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  Future<ProfileModel>? _profileData;
 
   @override
   Widget build(BuildContext context) {
@@ -19,18 +28,28 @@ class Profile extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: const [
-            /// HELLO ANANDHU PART
-            ProfileSection1(),
+          children: [
+            FutureBuilder<ProfileModel>(
+                future: ApiService().getProfile(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: [
+                        SizedBox(height: 10.0),
+                        buildProfileHead(snapshot.data!.data),
+                        buildProfileGrid(),
+                      ],
+                    );
+                  }
+                  return SizedBox();
+                }),
 
-            /// PROFLE, WISHLIST, SETTINGS, WISHLIST , SUPPORT PART
-            ProfileSection3(),
             SizedBox(
               height: 20,
             ),
 
             /// ON GOING SERVICE HEADING
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(10.0),
               child: Align(
                   alignment: Alignment.topLeft,
@@ -44,7 +63,7 @@ class Profile extends StatelessWidget {
             ),
 
             SizedBox(
-              height: 20,
+              height: 10,
             ),
 
             /// POPULAR SERVICE LIST
@@ -54,86 +73,94 @@ class Profile extends StatelessWidget {
       ),
     );
   }
-}
 
-/// HELLO , ANANDHU PART
-
-class ProfileSection1 extends StatelessWidget {
-  const ProfileSection1({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Row(
-        children: [
-          ConstSize.kwidth,
-          const Text(
-            'Hello,',
-            style: TextStyle(color: backgroundColor2, fontSize: 25),
-          ),
-          const Text(
-            ' Anandhu',
-            style: TextStyle(color: primaryColor, fontSize: 25),
-          ),
-          const Spacer(),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ViewProfile()));
-            },
-            child: Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                  color: Colors.grey, borderRadius: BorderRadius.circular(50)),
+  buildProfileHead(Data? data) {
+    return Row(
+      children: [
+        ConstSize.kwidth,
+        const Text(
+          'Hello,',
+          style: TextStyle(color: backgroundColor2, fontSize: 25),
+        ),
+        Text(
+          ' ${data!.name}',
+          style: TextStyle(color: primaryColor, fontSize: 25),
+        ),
+        const Spacer(),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const ViewProfile()));
+          },
+          child: Container(
+            height: 45,
+            width: 45,
+            // alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.grey,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Image.network(
+                '${data.imageName}',
+                fit: BoxFit.cover,
+                errorBuilder: (context, ob, st) {
+                  return Text(
+                    data.name!.substring(0, 1).toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-          ConstSize.kwidth,
-        ],
-      ),
+        ),
+        ConstSize.kwidth,
+      ],
     );
   }
-}
 
-/// FOUR BUTTON PART
-
-class ProfileSection3 extends StatelessWidget {
-  const ProfileSection3({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  buildProfileGrid() {
     return Column(
       children: [
         ConstSize.kheight,
-        ConstSize.kheight,
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
             ProfileButton(
               text1: 'Profile',
               icon: Icons.account_box,
+              buttonAction: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ViewProfile()));
+              },
             ),
             ProfileButton(
               text1: 'Wishlist',
               icon: Icons.favorite,
+              buttonAction: () {},
             ),
           ],
         ),
         ConstSize.kheight,
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
             ProfileButton(
               text1: 'Settings',
               icon: Icons.settings,
+              buttonAction: () {},
             ),
             ProfileButton(
               text1: 'Support',
               icon: Icons.support,
+              buttonAction: () {},
             ),
           ],
         ),
@@ -141,3 +168,8 @@ class ProfileSection3 extends StatelessWidget {
     );
   }
 }
+
+/// HELLO , ANANDHU PART
+
+/// FOUR BUTTON PART
+
