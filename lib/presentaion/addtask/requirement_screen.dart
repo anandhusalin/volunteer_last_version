@@ -559,7 +559,10 @@ class _RequirementsScreenState extends State<RequirementsScreen> {
       // 'issue_desc': widget.issueDesc,
       'est_duration': widget.estDur,
       'task_requirement':
-          ' [ { "req_title": ${controllers[0].text}, "req_count": ${counts[0]}, "req_unit": ${dropDown[0]} }, { "req_title": "Manure", "req_count": 5, "req_unit": "Kilo" } ]',
+          ' [ { "req_title": ${controllers[0].text},'
+              ' "req_count": ${counts[0]},'
+              ' "req_unit": ${dropDown[0]} }, '
+              '{ "req_title": "Manure", "req_count": 5, "req_unit": "Kilo" } ]',
       'volunteer_limit': ' 5'
       // 'task_requirement':
       //     ' [ { "req_title": ${controllers[0].text}, "req_count": ${counts[0]}, "req_unit": ${dropDown[0]} }, { "req_title": "Manure", "req_count": 5, "req_unit": "Kilo" } ]',
