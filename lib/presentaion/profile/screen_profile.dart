@@ -1,9 +1,11 @@
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:bloc_volunteer_service/core/constant.dart';
 import 'package:bloc_volunteer_service/model/profile/profileModel.dart';
+import 'package:bloc_volunteer_service/presentaion/contactUs/screenContactUs.dart';
 import 'package:bloc_volunteer_service/presentaion/profile/widgets/profile_button.dart';
 
 import 'package:bloc_volunteer_service/presentaion/widgets/service_list.dart';
+import 'package:bloc_volunteer_service/presentaion/wishlist/screenWishlist.dart';
 import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:flutter/material.dart';
 import '../view_profile/view_profile.dart';
@@ -78,13 +80,24 @@ class _ProfileState extends State<Profile> {
     return Row(
       children: [
         ConstSize.kwidth,
-        const Text(
-          'Hello,',
-          style: TextStyle(color: backgroundColor2, fontSize: 25),
-        ),
-        Text(
-          ' ${data!.name}',
-          style: TextStyle(color: primaryColor, fontSize: 25),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const ViewProfile()));
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Hello,',
+                style: TextStyle(color: backgroundColor2, fontSize: 25),
+              ),
+              Text(
+                '${data!.name}',
+                style: TextStyle(color: primaryColor, fontSize: 25),
+              ),
+            ],
+          ),
         ),
         const Spacer(),
         GestureDetector(
@@ -93,8 +106,8 @@ class _ProfileState extends State<Profile> {
                 MaterialPageRoute(builder: (context) => const ViewProfile()));
           },
           child: Container(
-            height: 45,
-            width: 45,
+            height: 50,
+            width: 50,
             // alignment: Alignment.center,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
@@ -144,7 +157,12 @@ class _ProfileState extends State<Profile> {
             ProfileButton(
               text1: 'Wishlist',
               icon: Icons.favorite,
-              buttonAction: () {},
+              buttonAction: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WishListScreen()));
+              },
             ),
           ],
         ),
@@ -153,9 +171,14 @@ class _ProfileState extends State<Profile> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ProfileButton(
-              text1: 'Settings',
-              icon: Icons.settings,
-              buttonAction: () {},
+              text1: 'Contact us',
+              icon: Icons.contact_support_outlined,
+              buttonAction: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ContactUsScreen()));
+              },
             ),
             ProfileButton(
               text1: 'Support',

@@ -167,14 +167,20 @@ class _CategorySectionState extends State<CategorySection> {
                           flex: 1,
                           child: Container(
                             width: MediaQuery.of(context).size.width,
-                            color: Colors.blue,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   top: 5, left: 8, right: 8, bottom: 5),
                               child: TextInput(
                                   colorOfText: Colors.white,
                                   maxlines: true,
-                                  size: 15,
+                                  size: 13,
                                   text1: item.data![0][index].taskTitle!
                                       .toUpperCase()),
                             ),

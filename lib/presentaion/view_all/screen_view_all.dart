@@ -1,7 +1,9 @@
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
+import 'package:bloc_volunteer_service/model/celebration/celebrationSliderModel.dart';
 import 'package:bloc_volunteer_service/presentaion/view_all/widgets/view_all_listing_services.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/service_list.dart';
+import 'package:bloc_volunteer_service/services/apiService.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -17,44 +19,45 @@ class ViewAll extends StatefulWidget {
 class _ViewAllState extends State<ViewAll> {
   int index = 0;
   Widget movingCard() {
-    return CarouselSlider(
-        items: [
-          GestureDetector(
-              onTap: () {},
-              child: const BannerCard(url: 'images/Servicebnr.jpg')),
-          GestureDetector(
-              onTap: () {},
-              child: const BannerCard(url: 'images/Servicebnr.jpg')),
-          GestureDetector(
-              onTap: () {},
-              child: const BannerCard(url: 'images/Servicebnr.jpg')),
-          GestureDetector(
-              onTap: () {},
-              child: const BannerCard(url: 'images/Servicebnr.jpg')),
-          GestureDetector(
-              onTap: () {},
-              child: const BannerCard(url: 'images/Servicebnr.jpg')),
-        ],
-        options: CarouselOptions(
-          height: 170,
-          aspectRatio: 16 / 9,
-          viewportFraction: 0.8,
-          initialPage: 0,
-          enableInfiniteScroll: true,
-          reverse: false,
-          autoPlay: true,
-          autoPlayInterval: const Duration(seconds: 3),
-          autoPlayAnimationDuration: const Duration(milliseconds: 800),
-          autoPlayCurve: Curves.fastOutSlowIn,
-          enlargeCenterPage: true,
-          onPageChanged: (value, _) {
-            // print(value);
-            setState(() {
-              index = value;
-            });
-          },
-          scrollDirection: Axis.horizontal,
-        ));
+    return FutureBuilder<CelebrationSliderModel>(
+        future: ApiService().getCelebrationList(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data!.data!.isNotEmpty) {
+            var items = snapshot.data!.data;
+            return CarouselSlider(
+                items: [
+                  for (var i = 0; i < items!.length; i++)
+                    GestureDetector(
+                      onTap: () {},
+                      child: BannerCard(
+                        url: 'images/Servicebnr.jpg',
+                        item: items[i],
+                      ),
+                    ),
+                ],
+                options: CarouselOptions(
+                  height: 170,
+                  aspectRatio: 16 / 9,
+                  viewportFraction: 0.8,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: true,
+                  autoPlayInterval: const Duration(seconds: 3),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enlargeCenterPage: true,
+                  onPageChanged: (value, _) {
+                    setState(() {
+                      index = value;
+                    });
+                  },
+                  scrollDirection: Axis.horizontal,
+                ));
+          } else {
+            return SizedBox();
+          }
+        });
   }
 
   @override
@@ -64,26 +67,29 @@ class _ViewAllState extends State<ViewAll> {
         title: "SERVICES",
         icon2: Icons.search,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            movingCard(),
-            const SizedBox(
-              height: 30,
-            ),
-            const Text(
-              'Services',
-              style: TextStyle(
-                  color: primaryColor,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold),
-            ),
-            const ViewAllServiceList(),
-            // const ServiceList()
-          ],
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 30,
+              ),
+              movingCard(),
+              const SizedBox(
+                height: 30,
+              ),
+              const Text(
+                'Services',
+                style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold),
+              ),
+              const ViewAllServiceList(),
+              // const ServiceList()
+            ],
+          ),
         ),
       ),
     );

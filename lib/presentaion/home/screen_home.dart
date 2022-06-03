@@ -1,6 +1,7 @@
 import 'package:bloc_volunteer_service/core/constant.dart';
 import 'package:bloc_volunteer_service/model/celebration/celebrationSliderModel.dart';
 import 'package:bloc_volunteer_service/model/celebration_model.dart';
+import 'package:bloc_volunteer_service/presentaion/celebration_detail_page/screen_celebration_page.dart';
 import 'package:bloc_volunteer_service/presentaion/mainpage/widgets/bottom_nav.dart';
 
 import 'package:bloc_volunteer_service/presentaion/view_all/screen_view_all.dart';
@@ -43,7 +44,14 @@ class _ScreenHomeState extends State<ScreenHome>
                 items: [
                   for (var i = 0; i < items!.length; i++)
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CelebrationSystemDetail(
+                                      items: items[i],
+                                    )));
+                      },
                       child: BannerCard(
                         url: 'images/Servicebnr.jpg',
                         item: items[i],

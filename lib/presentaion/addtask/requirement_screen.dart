@@ -15,6 +15,9 @@ import '../widgets/inputfield.dart';
 class RequirementsScreen extends StatefulWidget {
   final String title;
   final String desc;
+  // final String issuetitle;
+  // final String issueDesc;
+  // final String issueLoc;
   final String estDur;
   final String volLimit;
 
@@ -22,6 +25,9 @@ class RequirementsScreen extends StatefulWidget {
     Key? key,
     required this.title,
     required this.desc,
+    // required this.issuetitle,
+    // required this.issueDesc,
+    // required this.issueLoc,
     required this.estDur,
     required this.volLimit,
   }) : super(key: key);
@@ -559,10 +565,7 @@ class _RequirementsScreenState extends State<RequirementsScreen> {
       // 'issue_desc': widget.issueDesc,
       'est_duration': widget.estDur,
       'task_requirement':
-          ' [ { "req_title": ${controllers[0].text},'
-              ' "req_count": ${counts[0]},'
-              ' "req_unit": ${dropDown[0]} }, '
-              '{ "req_title": "Manure", "req_count": 5, "req_unit": "Kilo" } ]',
+          ' [ { "req_title": ${controllers[0].text}, "req_count": ${counts[0]}, "req_unit": ${dropDown[0]} }, { "req_title": "Manure", "req_count": 5, "req_unit": "Kilo" } ]',
       'volunteer_limit': ' 5'
       // 'task_requirement':
       //     ' [ { "req_title": ${controllers[0].text}, "req_count": ${counts[0]}, "req_unit": ${dropDown[0]} }, { "req_title": "Manure", "req_count": 5, "req_unit": "Kilo" } ]',
