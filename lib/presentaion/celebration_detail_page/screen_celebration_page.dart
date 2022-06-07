@@ -1,9 +1,12 @@
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:bloc_volunteer_service/core/constant.dart';
+import 'package:bloc_volunteer_service/model/celebration/celebrationDetailModel.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/progressWidget.dart';
+import 'package:bloc_volunteer_service/services/apiService.dart';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../widgets/app_bar2_widget.dart';
 
@@ -17,6 +20,7 @@ class CelebrationSystemDetail extends StatefulWidget {
 }
 
 class _CelebrationSystemDetailState extends State<CelebrationSystemDetail> {
+  var outputFormat = DateFormat('dd-MM-yyyy hh:mm');
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -26,39 +30,55 @@ class _CelebrationSystemDetailState extends State<CelebrationSystemDetail> {
         title: '${widget.items.taskTitle}',
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            ClipRRect(
-                borderRadius: BorderRadius.circular(25),
-                child: Image.asset(
-                  'images/service2.jpg',
-                  // height: height * 0.25,
-                  width: width - 50,
-                )),
-            const SizedBox(
-              height: 10,
-            ),
-            const Text(
-              'Service Completed',
-              style: TextStyle(
-                  color: primaryColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            buildTaskCompletionWidget(width)
-          ],
-        ),
+        child: FutureBuilder<CelebrationDetailModel>(
+            future: ApiService().getCelebrationDetails(
+                widget.items.serviceId, widget.items.userId),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                var data = snapshot.data!.data;
+                return Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: data!.serImage != null
+                          ? Image.network('${data.serImage}')
+                          : Image.asset(
+                              'images/service2.jpg',
+                              // height: height * 0.25,
+                              width: width - 50,
+                            ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Text(
+                      'Service Completed',
+                      style: TextStyle(
+                          color: primaryColor,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    buildTaskCompletionWidget(width, data)
+                  ],
+                );
+              } else {
+                return Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }),
       ),
     );
   }
 
-  buildTaskCompletionWidget(width) {
+  buildTaskCompletionWidget(width, data) {
     return Container(
       // height: 250,
       decoration: BoxDecoration(
@@ -70,25 +90,27 @@ class _CelebrationSystemDetailState extends State<CelebrationSystemDetail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildDateTimeWidget('Start', '22-Apr-2022 11:11:13 AM'),
+          buildDateTimeWidget(
+              'Start', outputFormat.format(data.startDate as DateTime)),
           const SizedBox(height: 10),
-          buildDateTimeWidget('End', '26-Apr-2022 12:12:00 AM'),
+          buildDateTimeWidget(
+              'End', outputFormat.format(data.endDate as DateTime)),
           const Divider(
             height: 7.0,
             thickness: 1.0,
           ),
           const SizedBox(height: 5.0),
           Text(
-            widget.items.taskTitle,
+            '${data.taskTitle}',
             style: const TextStyle(
                 color: primaryColor, fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5.0),
-          buildServiceDescription(),
+          buildServiceDescription(data.taskDesc),
           const SizedBox(height: 5),
           Row(
-            children: const [
-              Text(
+            children: [
+              const Text(
                 'Total Time to taken\t -',
                 style: TextStyle(
                   fontSize: 16,
@@ -97,8 +119,8 @@ class _CelebrationSystemDetailState extends State<CelebrationSystemDetail> {
                 ),
               ),
               Text(
-                '1 Day',
-                style: TextStyle(
+                '${data.nofDateTaken}',
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: primaryColor,
@@ -116,22 +138,20 @@ class _CelebrationSystemDetailState extends State<CelebrationSystemDetail> {
             ),
           ),
           Column(
-            children: [
-              buildTaskListWidget(width),
-              buildTaskListWidget(width),
-              buildTaskListWidget(width),
-              buildTaskListWidget(width),
-            ],
+            children: List.generate(
+              data.taskList.length,
+              (index) => buildTaskListWidget(width, data.taskList[index]),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Text buildServiceDescription() {
-    return const Text(
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-      style: TextStyle(
+  Text buildServiceDescription(taskDesc) {
+    return Text(
+      taskDesc,
+      style: const TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.w400,
         overflow: TextOverflow.fade,
@@ -139,7 +159,7 @@ class _CelebrationSystemDetailState extends State<CelebrationSystemDetail> {
     );
   }
 
-  buildTaskListWidget(width) {
+  buildTaskListWidget(width, taskItem) {
     return Container(
       width: width * 0.90,
       margin: const EdgeInsets.symmetric(vertical: 5),
@@ -150,10 +170,10 @@ class _CelebrationSystemDetailState extends State<CelebrationSystemDetail> {
           borderRadius: BorderRadius.circular(5)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
+        children: [
           Text(
-            'Task Name',
-            style: TextStyle(
+            taskItem.subtaskTitle,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),

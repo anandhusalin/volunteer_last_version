@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:bloc_volunteer_service/model/celebration/celebrationDetailModel.dart';
 import 'package:bloc_volunteer_service/model/celebration/celebrationSliderModel.dart';
 import 'package:bloc_volunteer_service/model/profile/profileModel.dart';
 import 'package:bloc_volunteer_service/model/service_response.dart';
@@ -112,7 +113,7 @@ class ApiService {
     };
 
     var response = await postData(data, '/changePassword');
-    inspect(response);
+    // inspect(response);
     var body = json.decode(response.body);
     if (response.statusCode == 200 && body['status'] == 1) {
       return 'Success';
@@ -136,5 +137,27 @@ class ApiService {
       return celebrationSliderModel;
     }
     return celebrationSliderModel;
+  }
+
+  Future<CelebrationDetailModel> getCelebrationDetails(
+      service_id, user_id) async {
+    var data = {
+      'service_id': service_id.toString(),
+      'user_id': user_id.toString(),
+    };
+
+    var celebrationDetailModel;
+    try {
+      var response = await postData(data, '/getCelebrationInfo');
+      if (response.statusCode == 200) {
+        var jsonString = response.body;
+        var jsonMap = json.decode(jsonString);
+        celebrationDetailModel = CelebrationDetailModel.fromJson(jsonMap);
+      }
+    } catch (e) {
+      print(e);
+      return celebrationDetailModel;
+    }
+    return celebrationDetailModel;
   }
 }

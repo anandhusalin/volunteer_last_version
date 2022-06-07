@@ -1,3 +1,4 @@
+import 'package:bloc_volunteer_service/model/chat/chatModel.dart';
 import 'package:flutter/material.dart';
 
 import 'message_model_tiles.dart';
@@ -7,7 +8,7 @@ class MessageTiles extends StatelessWidget {
     Key? key,
     required this.obj,
   }) : super(key: key);
-  final MessageTilesModel obj;
+  final obj;
 
   @override
   Widget build(BuildContext context) {
@@ -15,16 +16,16 @@ class MessageTiles extends StatelessWidget {
       padding: EdgeInsets.only(
           top: 4,
           bottom: 4,
-          left: obj.sentByMe ? 0 : 28,
-          right: obj.sentByMe ? 28 : 0),
-      alignment: obj.sentByMe ? Alignment.centerRight : Alignment.centerLeft,
+          left: obj.isUser ? 0 : 28,
+          right: obj.isUser ? 28 : 0),
+      alignment: obj.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: obj.sentByMe
+        margin: obj.isUser
             ? const EdgeInsets.only(left: 30)
             : const EdgeInsets.only(right: 30),
         padding: const EdgeInsets.only(top: 6, bottom: 6, left: 20, right: 40),
         decoration: BoxDecoration(
-          borderRadius: obj.sentByMe
+          borderRadius: obj.isUser
               ? const BorderRadius.only(
                   bottomRight: Radius.circular(20),
                   topLeft: Radius.circular(20),
@@ -35,12 +36,12 @@ class MessageTiles extends StatelessWidget {
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                   bottomRight: Radius.circular(20)),
-          color: obj.sentByMe ? Colors.blueAccent : Colors.grey[700],
+          color: obj.isUser ? Colors.blueAccent : Colors.grey[700],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(obj.sender.toUpperCase(),
+            Text(obj.name.toUpperCase(),
                 textAlign: TextAlign.start,
                 style: const TextStyle(
                     fontSize: 13.0,

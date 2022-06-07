@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:bloc_volunteer_service/presentaion/splashscren/splash_screen_copy.dart';
+import 'package:bloc_volunteer_service/provider/chat/ChatProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 
 import 'core/colors/colors.dart';
 
@@ -37,15 +39,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-          scaffoldBackgroundColor: backgroundColor,
-          backgroundColor: backgroundColor,
-          primarySwatch: Colors.blue,
-          platform: TargetPlatform.iOS),
-      home: const SplashScreen(),
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => ChatProvider(),
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+            scaffoldBackgroundColor: backgroundColor,
+            backgroundColor: backgroundColor,
+            primarySwatch: Colors.blue,
+            platform: TargetPlatform.iOS),
+        home: const SplashScreen(),
+      ),
     );
   }
 }
