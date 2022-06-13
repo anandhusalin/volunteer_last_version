@@ -16,6 +16,7 @@ class ServiceInfoModel {
     this.code,
     this.message,
     this.data,
+    this.taskData,
     this.misc,
   });
 
@@ -23,6 +24,7 @@ class ServiceInfoModel {
   int? code;
   String? message;
   List<Datum>? data;
+  List<TaskDatum>? taskData;
   Misc? misc;
 
   factory ServiceInfoModel.fromJson(Map<String, dynamic> json) =>
@@ -31,6 +33,8 @@ class ServiceInfoModel {
         code: json["code"],
         message: json["message"],
         data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        taskData: List<TaskDatum>.from(
+            json["task_data"].map((x) => TaskDatum.fromJson(x))),
         misc: Misc.fromJson(json["misc"]),
       );
 
@@ -39,6 +43,7 @@ class ServiceInfoModel {
         "code": code,
         "message": message,
         "data": List<dynamic>.from(data!.map((x) => x.toJson())),
+        "task_data": List<dynamic>.from(taskData!.map((x) => x.toJson())),
         "misc": misc!.toJson(),
       };
 }
@@ -62,11 +67,11 @@ class Datum {
   String? taskDesc;
   int? volunteerLimit;
   int? estDuration;
-  dynamic catId;
+  int? catId;
   dynamic locId;
   dynamic subId;
   int? isPopular;
-  List<Image>? images;
+  List<dynamic>? images;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"],
@@ -78,7 +83,7 @@ class Datum {
         locId: json["loc_id"],
         subId: json["sub_id"],
         isPopular: json["is_popular"],
-        images: List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
+        images: List<dynamic>.from(json["images"].map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
@@ -91,31 +96,7 @@ class Datum {
         "loc_id": locId,
         "sub_id": subId,
         "is_popular": isPopular,
-        "images": List<dynamic>.from(images!.map((x) => x.toJson())),
-      };
-}
-
-class Image {
-  Image({
-    this.id,
-    this.serviceId,
-    this.imageName,
-  });
-
-  int? id;
-  int? serviceId;
-  String? imageName;
-
-  factory Image.fromJson(Map<String, dynamic> json) => Image(
-        id: json["id"],
-        serviceId: json["service_id"],
-        imageName: json["image_name"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "service_id": serviceId,
-        "image_name": imageName,
+        "images": List<dynamic>.from(images!.map((x) => x)),
       };
 }
 
@@ -132,5 +113,45 @@ class Misc {
 
   Map<String, dynamic> toJson() => {
         "image_placeholder": imagePlaceholder,
+      };
+}
+
+class TaskDatum {
+  TaskDatum({
+    this.taskId,
+    this.serviceId,
+    this.assigneeId,
+    this.progress,
+    this.subtaskTitle,
+    this.subtaskDesc,
+    this.assignName,
+  });
+
+  int? taskId;
+  int? serviceId;
+  int? assigneeId;
+  int? progress;
+  String? subtaskTitle;
+  String? subtaskDesc;
+  String? assignName;
+
+  factory TaskDatum.fromJson(Map<String, dynamic> json) => TaskDatum(
+        taskId: json["task_id"],
+        serviceId: json["service_id"],
+        assigneeId: json["assignee_id"],
+        progress: json["progress"],
+        subtaskTitle: json["subtask_title"],
+        subtaskDesc: json["subtask_desc"],
+        assignName: json["assignName"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "task_id": taskId,
+        "service_id": serviceId,
+        "assignee_id": assigneeId,
+        "progress": progress,
+        "subtask_title": subtaskTitle,
+        "subtask_desc": subtaskDesc,
+        "assignName": assignName,
       };
 }

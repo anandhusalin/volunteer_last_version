@@ -13,20 +13,20 @@ String serviceResponseToJson(ServiceResponse data) =>
 class ServiceResponse {
   ServiceResponse({
     this.message,
-    this.taskId,
+    this.service_id,
   });
 
   String? message;
-  int? taskId;
+  int? service_id;
 
   factory ServiceResponse.fromJson(Map<String, dynamic> json) =>
       ServiceResponse(
         message: json["message"],
-        taskId: json["task_id"],
+        service_id: json["service_id"],
       );
 
   Map<String, dynamic> toJson() => {
         "message": message,
-        "task_id": taskId,
+        "service_id": service_id,
       };
 }

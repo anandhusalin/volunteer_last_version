@@ -16,7 +16,7 @@ Future<void> main() async {
     statusBarColor: Colors.blue,
   ));
 
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
   // HttpOverrides.global = MyHttpOverrides();
   // HttpOverrides.global = MyHttpOverrides();
 

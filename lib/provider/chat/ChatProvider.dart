@@ -5,8 +5,8 @@ import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChatProvider with ChangeNotifier {
-  var _chatList = null;
-  ChatModel get chatList => _chatList;
+  ChatModel? _chatList;
+  ChatModel? get chatList => _chatList;
 
   bool _busy = false;
   bool get busy => _busy;
@@ -16,7 +16,7 @@ class ChatProvider with ChangeNotifier {
   }
 
   // get chat list
-  Future<ChatModel> getChat(serviceId) async {
+  Future<ChatModel?> getChat(serviceId) async {
     setBusy(true);
     var response = await ApiService().gatData('/get-chat/$serviceId');
     if (response.statusCode == 200) {
@@ -38,7 +38,7 @@ class ChatProvider with ChangeNotifier {
       'sent_on': now.toIso8601String()
     };
     setBusy(true);
-    var response = await ApiService().postData(data, '/start-chat');
+    var response = await ApiService().postData(data, '/start-chat', false);
     var body = json.decode(response.body);
     if (response.statusCode == 200 && body['status'] == 1) {
       setBusy(false);

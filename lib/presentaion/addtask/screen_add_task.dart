@@ -73,14 +73,14 @@ class _AddScreenState extends State<AddScreen> {
       setState(() {
         isLoading = false;
       });
-      // inspect(value);
+      inspect(value);
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => RequirementsScreen(
-                desc: solutionDescriptionController.text,
-                estDur: estimatedControler.text,
-                title: solutionController.text,
-                volLimit: _controller.text,
-              )));
+              desc: solutionDescriptionController.text,
+              estDur: estimatedControler.text,
+              title: solutionController.text,
+              volLimit: _controller.text,
+              serviceId: value.service_id)));
     });
   }
 
@@ -219,7 +219,7 @@ class _AddScreenState extends State<AddScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(
-        title: "SERVICE ADDING",
+        title: "ADD SERVICE",
         icon2: Icons.search,
       ),
       body: GestureDetector(
@@ -712,7 +712,7 @@ class _AddScreenState extends State<AddScreen> {
                         }
                       },
                       child: const Text(
-                        'ADD TASK',
+                        'SUBMIT',
                         style: TextStyle(
                             color: backgroundColor,
                             fontWeight: FontWeight.bold,

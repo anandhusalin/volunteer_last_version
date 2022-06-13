@@ -2,8 +2,10 @@ import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:flutter/material.dart';
 
 class ProgressWidget extends StatelessWidget {
+  final progress;
   const ProgressWidget({
     Key? key,
+    this.progress,
   }) : super(key: key);
 
   @override
@@ -14,17 +16,17 @@ class ProgressWidget extends StatelessWidget {
         alignment: AlignmentDirectional.center,
         children: [
           Container(
-            height: 40.0,
-            width: 40.0,
-            child: const CircularProgressIndicator(
-              value: 8 / 10,
-              valueColor: AlwaysStoppedAnimation(primaryColor),
+            height: 35.0,
+            width: 35.0,
+            child: CircularProgressIndicator(
+              value: (progress / 10) / 10,
+              valueColor: const AlwaysStoppedAnimation(primaryColor),
               backgroundColor: Colors.grey,
             ),
           ),
-          const Text(
-            '10%',
-            style: TextStyle(
+          Text(
+            '$progress%',
+            style: const TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 12,
               // color: ,

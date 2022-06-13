@@ -1,4 +1,6 @@
 import 'package:bloc_volunteer_service/model/home_screen_model.dart';
+import 'package:bloc_volunteer_service/presentaion/widgets/chat.dart';
+import 'package:bloc_volunteer_service/services/apiService.dart';
 
 import 'package:bloc_volunteer_service/services/home_services.dart';
 import 'package:flutter/material.dart';
@@ -47,13 +49,27 @@ class _ServiceListState extends State<ServiceList> {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
             itemBuilder: (context, index) => GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TaskPage(
-                                  ServiceId: homeModel!.data![0][index].id,
-                                )));
+                  onTap: () async {
+                    Object type = await ApiService()
+                        .getRequestToVolunteer(homeModel!.data![0][index].id);
+
+                    if (await type == "false") {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TaskPage(
+                                    ServiceId: homeModel!.data![0][index].id,
+                                  )));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Chat(
+                                    serviceId: homeModel?.data![0][index].id,
+                                    serviceTitle:
+                                        homeModel?.data![0][index].taskTitle,
+                                  )));
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

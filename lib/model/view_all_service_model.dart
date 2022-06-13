@@ -49,18 +49,21 @@ class Datum {
     this.taskTitle,
     this.estDuration,
     this.imageName,
+    this.user,
   });
 
   int? id;
   String? taskTitle;
   int? estDuration;
   String? imageName;
+  bool? user;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"],
         taskTitle: json["task_title"],
         estDuration: json["est_duration"],
         imageName: json["image_name"] == null ? null : json["image_name"],
+        user: json["user"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -68,6 +71,7 @@ class Datum {
         "task_title": taskTitle,
         "est_duration": estDuration,
         "image_name": imageName == null ? null : imageName,
+        "user": user,
       };
 }
 

@@ -96,7 +96,10 @@ class _LoginState extends State<Login> {
                     ConstSize.kheight,
                     Row(
                       children: [
-                        const Text('I Have Not  An Account!'),
+                        const Text(
+                          "I don't have an account!",
+                          style: TextStyle(fontSize: 16),
+                        ),
                         ConstSize.kwidth,
                         GestureDetector(
                           onTap: () {

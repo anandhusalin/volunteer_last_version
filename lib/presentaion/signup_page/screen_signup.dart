@@ -37,7 +37,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
           reverse: true,
@@ -135,8 +135,9 @@ class _SignUpState extends State<SignUp> {
                 ConstSize.kheight,
                 TextFormField(
                   controller: dobController,
+                  keyboardType: TextInputType.datetime,
                   decoration: InputDecoration(
-                    hintText: 'DOB',
+                    hintText: 'DD/MM/YYYY',
                     hintStyle: const TextStyle(color: backgroundColor2),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -203,9 +204,12 @@ class _SignUpState extends State<SignUp> {
                     child: const CircularProgressIndicator(
                       color: primaryColor,
                     )),
+                const SizedBox(
+                  height: 10,
+                ),
                 Row(
                   children: [
-                    const Text('I Have Already An Account'),
+                    const Text('I Have An Account'),
                     const SizedBox(
                       width: 20,
                     ),

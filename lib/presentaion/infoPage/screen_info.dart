@@ -1,12 +1,17 @@
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
+import 'package:bloc_volunteer_service/model/serviceInformation/serviceInformationModel.dart';
+import 'package:bloc_volunteer_service/presentaion/service_info/widget/serviceTaskTile.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/progressWidget.dart';
+import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get_storage/get_storage.dart';
 
 class InfoScreen extends StatefulWidget {
-  const InfoScreen({Key? key}) : super(key: key);
+  final serviceId;
+  InfoScreen({Key? key, required this.serviceId}) : super(key: key);
 
   @override
   State<InfoScreen> createState() => _InfoScreenState();
@@ -21,10 +26,16 @@ class _InfoScreenState extends State<InfoScreen> {
   );
   int volunteerPageIndex = 1;
   int taskPageIndex = 1;
+  final box = GetStorage();
+  late int user_id;
+  Future<ServiceInformationModel>? _serviceInformationModel;
 
   @override
   void initState() {
     super.initState();
+    loadData();
+    // _serviceInformationModel =
+    //     ApiService().getInformationData(widget.serviceId);
     _pageController.addListener(() {
       setState(() {
         volunteerPageIndex = _pageController.page!.toInt() + 1;
@@ -35,6 +46,17 @@ class _InfoScreenState extends State<InfoScreen> {
         taskPageIndex = _pageControllerTask.page!.toInt() + 1;
       });
     });
+  }
+
+  loadData() async {
+    user_id = await box.read('user_id');
+  }
+
+  @override
+  void didChangeDependencies() {
+    // _serviceInformationModel =
+    //     ApiService().getInformationData(widget.serviceId);
+    super.didChangeDependencies();
   }
 
   @override
@@ -50,16 +72,27 @@ class _InfoScreenState extends State<InfoScreen> {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: const CustomAppBar(title: "Information"),
-      body: ListView(
-        children: [
-          buildVolunteerSectionWidget(width, height),
-          buildTaskSectionWidget(width, height),
-        ],
-      ),
+      body: StreamBuilder<ServiceInformationModel>(
+          stream: ApiService().getInformationData(widget.serviceId),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var data = snapshot.data!.data;
+              return ListView(
+                children: [
+                  buildVolunteerSectionWidget(width, height, data!.volunteers),
+                  buildTaskSectionWidget(width, height, data.task),
+                ],
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
     );
   }
 
-  buildVolunteerSectionWidget(double width, double height) {
+  buildVolunteerSectionWidget(double width, double height, data) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       child: Column(
@@ -85,27 +118,29 @@ class _InfoScreenState extends State<InfoScreen> {
             child: PageView(
                 controller: _pageController,
                 scrollDirection: Axis.horizontal,
-                children:
-                    List.generate(5, (index) => buildVolunteerWidget(width))),
+                children: List.generate(
+                    data.pageCount,
+                    (index) => buildVolunteerWidget(
+                        width, data!.voluteerList[index]))),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               buildPagerWidget(_pageController, volunteerPageIndex),
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.add,
-                  size: 14,
-                ),
-                label: const Text('Add'),
-                style: ElevatedButton.styleFrom(
-                  textStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
+              // ElevatedButton.icon(
+              //   onPressed: () {},
+              //   icon: const Icon(
+              //     Icons.add,
+              //     size: 14,
+              //   ),
+              //   label: const Text('Add'),
+              //   style: ElevatedButton.styleFrom(
+              //     textStyle: const TextStyle(
+              //       fontSize: 14,
+              //       fontWeight: FontWeight.w700,
+              //     ),
+              //   ),
+              // ),
             ],
           )
         ],
@@ -113,7 +148,7 @@ class _InfoScreenState extends State<InfoScreen> {
     );
   }
 
-  buildTaskSectionWidget(double width, double height) {
+  buildTaskSectionWidget(double width, double height, taskItem) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       child: Column(
@@ -133,12 +168,16 @@ class _InfoScreenState extends State<InfoScreen> {
           ),
           Divider(),
           Container(
-            height: height * 0.35,
+            height: height * 0.75,
             width: width - 20,
             child: PageView(
+              key: widget.key,
               controller: _pageControllerTask,
               scrollDirection: Axis.horizontal,
-              children: List.generate(5, (index) => buildTaskListWidget(width)),
+              children: List.generate(
+                  taskItem.pageCount,
+                  (index) =>
+                      buildTaskListWidget(width, taskItem.taskList[index])),
             ),
           ),
           Row(
@@ -166,15 +205,37 @@ class _InfoScreenState extends State<InfoScreen> {
     );
   }
 
-  buildTaskListWidget(double width) {
-    return Container(
-      child: Column(
-        children: [
-          buildTaskListItemWidget(width, true),
-          buildTaskListItemWidget(width, true),
-          buildTaskListItemWidget(width, true),
-          buildTaskListItemWidget(width, false),
-        ],
+  buildTaskListWidget(double width, taskData) {
+    return Column(
+      children: List<Widget>.generate(
+        taskData.length,
+        (index) {
+          var value = taskData[index];
+          return ServiceTaskTile(
+            isUserOption: value.assigneeId != null
+                ? value.assigneeId == user_id
+                    ? true
+                    : false
+                : false,
+            isUserId: user_id,
+            isAssigneeId: value.assigneeId,
+            taskStatus: value.assigneeId != null ? 'Ongoing' : 'Pending',
+            taskTitle: value.subtaskTitle,
+            taskAssignee: value.assignName ?? 'UNASSIGNED',
+            taskProgress: value.progress ?? 0,
+            serviceTaskTileAction: () async {
+              if (user_id == value.assigneeId) {
+                print('exit');
+              } else {
+                var res = await ApiService().assignTaskUser(value.taskId);
+                if (res) {
+                  loadData();
+                  setState(() {});
+                }
+              }
+            },
+          );
+        },
       ),
     );
   }
@@ -204,49 +265,6 @@ class _InfoScreenState extends State<InfoScreen> {
             border: InputBorder.none,
           ),
         ),
-      ),
-    );
-  }
-
-  buildTaskListItemWidget(width, isAssigned) {
-    return Container(
-      width: width * 0.90,
-      margin: const EdgeInsets.symmetric(vertical: 2),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(5)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            'Task Name',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 90),
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: isAssigned ? Colors.white : primaryColor,
-              borderRadius: BorderRadius.circular(5),
-              boxShadow: const [
-                BoxShadow(
-                  color: primaryColor,
-                  blurRadius: 1.0,
-                ),
-              ],
-            ),
-            child: isAssigned ? assignedByWidget() : buildNotAssignedWidget(),
-          ),
-          if (isAssigned)
-            const Padding(
-              padding: EdgeInsets.only(right: 10),
-              child: ProgressWidget(),
-            ),
-        ],
       ),
     );
   }
@@ -295,54 +313,43 @@ class _InfoScreenState extends State<InfoScreen> {
     );
   }
 
-  buildNotAssignedWidget() {
-    return const Text(
-      'Volunteer',
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        color: Colors.white,
-      ),
-    );
-  }
-
-  assignedByWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Assigned To',
-          style: TextStyle(
-            fontSize: 12,
-          ),
-        ),
-        Text(
-          'Admin',
-          style: TextStyle(
-            color: primaryColor,
-          ),
-        ),
-      ],
-    );
-  }
-
-  buildVolunteerWidget(width) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+  buildVolunteerWidget(width, item) {
+    return Wrap(
       children: List.generate(
-        4,
+        item.length,
         (index) => Container(
+          width: width,
+          margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: ListTile(
-            leading: Image.network(
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVRH9yuYVHX-g9OWR8BUU-NLkLVooLCpjtvA&usqp=CAU',
-              height: 50,
-              width: 50,
-            ),
-            title: Text('Volunteer Name'),
+          child: Row(
+            children: [
+              Container(
+                height: 55,
+                width: 50,
+                child: ClipRRect(
+                  child: Image.network(
+                    '${item[index].imageName}',
+                    errorBuilder: ((context, error, stackTrace) =>
+                        buildImageHolder()),
+                    fit: BoxFit.fill,
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                  ),
+                ),
+              ),
+              SizedBox(width: 5),
+              Text(
+                item[index].name,
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -403,6 +410,13 @@ class _InfoScreenState extends State<InfoScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  buildImageHolder() {
+    return Image.network(
+      'https://thumbs.dreamstime.com/b/no-thumbnail-images-placeholder-forums-blogs-websites-148010338.jpg',
+      fit: BoxFit.fill,
     );
   }
 }

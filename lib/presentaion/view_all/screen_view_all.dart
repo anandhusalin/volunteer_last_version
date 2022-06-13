@@ -18,6 +18,7 @@ class ViewAll extends StatefulWidget {
 
 class _ViewAllState extends State<ViewAll> {
   int index = 0;
+
   Widget movingCard() {
     return FutureBuilder<CelebrationSliderModel>(
         future: ApiService().getCelebrationList(),

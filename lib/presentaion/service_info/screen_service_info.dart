@@ -1,10 +1,13 @@
 import 'dart:developer';
 
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
+import 'package:bloc_volunteer_service/presentaion/service_info/widget/serviceTaskTile.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/chat.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/moving_card.dart';
+import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../model/service_info_model.dart';
 import '../../services/service_info_service.dart';
@@ -21,31 +24,18 @@ class TaskPage extends StatefulWidget {
 class _TaskPageState extends State<TaskPage> {
   int index = 0;
   final ServiceInfoService serviceInfoService = ServiceInfoService();
-  bool isLoading = true;
+  bool isLoading = false;
   ServiceInfoModel? serviceInfoModel;
   Future<ServiceInfoModel>? serviceInfoDetails;
   List serviceInfoList = [];
+  final box = GetStorage();
+  late int user_id;
 
   @override
   void initState() {
     super.initState();
+    user_id = box.read('user_id');
     serviceInfoDetails = serviceInfoService.getServiceInfo(widget.ServiceId);
-    // serviceInfoService.getServiceInfo().then((value) {
-    //   setState(() {
-    //     serviceInfoModel = value;
-    //     isLoading = false;
-    //     serviceInfoList = serviceInfoService.serviceList;
-    //   });
-    //   if (serviceInfoModel != null) {
-    //     // ignore: avoid_print
-
-    //     print(
-    //         "//////////////////////////////////////////////////////////////////////////////////////");
-    //     print(serviceInfoModel!.data![0].taskTitle.toString());
-    //     print(
-    //         "/////////////////////////////////////////////////////  END /////////////////////////////////");
-    //   }
-    // });
   }
 
   Widget movingCard(images, misc) {
@@ -56,7 +46,7 @@ class _TaskPageState extends State<TaskPage> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: NetworkImage('${element.imageName}'),
+                    image: NetworkImage('${element['image_name']}'),
                     // opacity: 180,
                     fit: BoxFit.fill,
                   ),
@@ -101,6 +91,8 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: CustomAppBar2(
         appbarLeadingButtonFunction: () {
@@ -118,20 +110,10 @@ class _TaskPageState extends State<TaskPage> {
               return SingleChildScrollView(
                 child: Column(
                   children: [
-                    // Container(
-                    //   height: 200,
-                    //   width: MediaQuery.of(context).size.width,
-                    //   decoration: const BoxDecoration(
-                    //       color: primaryColor,
-                    //       image: DecorationImage(
-                    //           fit: BoxFit.fill,
-                    //           image: AssetImage('images/Servicebnr.jpg'))),
-                    // ),
                     const SizedBox(
                       height: 10,
                     ),
                     movingCard(data!.images, snapshot.data?.misc),
-
                     const SizedBox(
                       height: 10,
                     ),
@@ -144,8 +126,7 @@ class _TaskPageState extends State<TaskPage> {
                             children: [
                               Text(
                                 '${data.taskTitle}',
-                                // serviceInfoModel!.data![0].taskTitle.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold),
@@ -171,24 +152,49 @@ class _TaskPageState extends State<TaskPage> {
                             height: 30,
                           ),
                           SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              height: 40,
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Chat(
-                                                  serviceId: data.id,
-                                                  serviceTitle: data.taskTitle,
-                                                )));
-                                  },
-                                  child: const Text(
-                                    'VOLUNTEER',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  )))
+                            width: MediaQuery.of(context).size.width,
+                            height: 40,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                bool value =
+                                    await ApiService().joinService(data.id);
+                                if (await value == true) {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Chat(
+                                                serviceId: data.id,
+                                                serviceTitle: data.taskTitle,
+                                              )));
+
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                }
+                              },
+                              child: !isLoading
+                                  ? const Text(
+                                      'PARTICIPATE',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  : const Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(3.0),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -291,54 +297,61 @@ class _TaskPageState extends State<TaskPage> {
                     const SizedBox(
                       height: 20,
                     ),
+                    if (snapshot.data!.taskData!.length > 0)
+                      const Divider(
+                        thickness: 1,
+                        color: Colors.grey,
+                      ),
+                    //list'
+                    if (snapshot.data!.taskData!.length > 0)
+                      const Text(
+                        'All Task',
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                    if (snapshot.data!.taskData!.length > 0)
+                      Column(
+                        children: List.generate(
+                          snapshot.data!.taskData!.length,
+                          (index) {
+                            var value = snapshot.data!.taskData![index];
+                            return ServiceTaskTile(
+                              isUserId: user_id,
+                              isUserOption: false,
+                              isAssigneeId: 0,
+                              taskStatus: value.assigneeId != null
+                                  ? 'Ongoing'
+                                  : 'Pending',
+                              taskTitle: value.subtaskTitle.toString(),
+                              taskAssignee: value.assignName ?? 'UNASSIGNED',
+                              taskProgress: value.progress ?? 0,
+                              serviceTaskTileAction: () {},
+                            );
+                          },
+                        ),
+                      ),
+
+                    //end
                     const Divider(
                       thickness: 1,
                       color: Colors.grey,
-                    ),
-                    const SizedBox(
-                      height: 20,
                     ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 15),
                       alignment: Alignment.topLeft,
                       child: Text(
                         '${data.taskDesc}',
-                        // serviceInfoModel!.data![0].taskDesc.toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    // Container(
-                    //   height: 200,
-                    //   width: MediaQuery.of(context).size.width,
-                    //   margin: const EdgeInsets.symmetric(horizontal: 10),
-                    //   decoration: BoxDecoration(
-                    //       borderRadius: BorderRadius.circular(10),
-                    //       image: const DecorationImage(
-                    //           fit: BoxFit.fill,
-                    //           image: AssetImage('images/service4.jpg'))),
-                    // ),
-                    // const SizedBox(
-                    //   height: 20,
-                    // ),
-                    // Container(
-                    //   margin: const EdgeInsets.symmetric(horizontal: 15),
-                    //   child: const Text(
-                    //     'hai',
-                    //     style: TextStyle(
-                    //       color: Colors.black,
-                    //       fontSize: 16,
-                    //     ),
-                    //   ),
-                    // ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               );

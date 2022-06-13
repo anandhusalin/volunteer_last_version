@@ -1,5 +1,7 @@
 import 'package:bloc_volunteer_service/model/view_all_service_model.dart';
 import 'package:bloc_volunteer_service/presentaion/nottifications/text_input.dart';
+import 'package:bloc_volunteer_service/presentaion/widgets/chat.dart';
+import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:flutter/material.dart';
 
 import '../../../services/view_all_service.dart';
@@ -50,13 +52,24 @@ class _ServiceListState extends State<ViewAllServiceList> {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
             itemBuilder: (context, index) => GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => TaskPage(
-                                ServiceId: _viewAllModel!.data![0][index].id,
-                              )));
+                onTap: () async {
+                  if (_viewAllModel!.data![0][index].user == false) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TaskPage(
+                                  ServiceId: _viewAllModel!.data![0][index].id,
+                                )));
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Chat(
+                                  serviceId: _viewAllModel!.data![0][index].id,
+                                  serviceTitle:
+                                      _viewAllModel!.data![0][index].taskTitle,
+                                )));
+                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),

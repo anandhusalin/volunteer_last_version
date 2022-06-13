@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:bloc_volunteer_service/model/service_response.dart';
 import 'package:bloc_volunteer_service/model/services_model.dart';
 import 'package:dio/dio.dart';
@@ -49,6 +50,7 @@ class ServicesService {
     var dio = Dio();
     final box = GetStorage();
     String token = await box.read('Token');
+
     try {
       var response = await dio.post(
         'https://volunteer.cyberfort.co.in/api/save-service',
@@ -60,12 +62,14 @@ class ServicesService {
           },
         ),
       );
-      var data = jsonDecode(response.data);
-      if (response.statusCode == 200 && data['status'] == null) {
-        return ServiceResponse.fromJson(data);
+      if (response.statusCode == 200 && response.data['status'] == 1) {
+        return ServiceResponse.fromJson(response.data);
       } else {
-        return ServiceResponse.fromJson(
-            {'data': null, 'message': data['message'], 'status': 'status'});
+        return ServiceResponse.fromJson({
+          'data': null,
+          'message': response.data['message'],
+          'status': 'status'
+        });
       }
     } catch (e) {
       return ServiceResponse.fromJson({
