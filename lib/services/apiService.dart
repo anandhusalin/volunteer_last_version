@@ -173,7 +173,7 @@ class ApiService {
   //get information data
   //stream
 
-  Stream<ServiceInformationModel> getInformationData(ser_id) async* {
+  Stream<ServiceInformationModel> getInformationDataO(ser_id) async* {
     print("dsadsdads");
     var serviceInformationModel;
     try {
@@ -191,7 +191,7 @@ class ApiService {
   }
 
   //end
-  Future<ServiceInformationModel> getInformationDataO(ser_id) async {
+  Future<ServiceInformationModel> getInformationData(ser_id) async {
     var serviceInformationModel;
     try {
       var response = await gatData('/getServiceInformation/$ser_id');

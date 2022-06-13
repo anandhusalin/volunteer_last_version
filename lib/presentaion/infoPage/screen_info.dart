@@ -72,8 +72,8 @@ class _InfoScreenState extends State<InfoScreen> {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: const CustomAppBar(title: "Information"),
-      body: StreamBuilder<ServiceInformationModel>(
-          stream: ApiService().getInformationData(widget.serviceId),
+      body: FutureBuilder<ServiceInformationModel>(
+          future: ApiService().getInformationData(widget.serviceId),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var data = snapshot.data!.data;
