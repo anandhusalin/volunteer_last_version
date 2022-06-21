@@ -18,7 +18,7 @@ class ViewAllServices {
       },
     );
     Map<String, dynamic> map = json.decode(response.body);
-    print(map);
+    // print(map);
 
     var view = map['data'];
     viewAll = view[0].map((entry) => (entry['task_title'])).toList();

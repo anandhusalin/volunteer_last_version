@@ -2,12 +2,15 @@ import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:bloc_volunteer_service/core/constant.dart';
 import 'package:bloc_volunteer_service/model/profile/profileModel.dart';
 import 'package:bloc_volunteer_service/presentaion/contactUs/screenContactUs.dart';
+import 'package:bloc_volunteer_service/presentaion/mainpage/widgets/bottom_nav.dart';
 import 'package:bloc_volunteer_service/presentaion/profile/widgets/profile_button.dart';
 
 import 'package:bloc_volunteer_service/presentaion/widgets/service_list.dart';
 import 'package:bloc_volunteer_service/presentaion/wishlist/screenWishlist.dart';
+import 'package:bloc_volunteer_service/provider/celebration/celebrationProvider.dart';
 import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../view_profile/view_profile.dart';
 import '../widgets/app_bar_widgets.dart';
 
@@ -46,22 +49,42 @@ class _ProfileState extends State<Profile> {
                   return SizedBox();
                 }),
 
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
 
             /// ON GOING SERVICE HEADING
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(10.0),
-              child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
                     'On Going Services',
                     style: TextStyle(
                         fontFamily: "Poppins",
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
-                  )),
+                  ),
+                  Row(
+                    children: [
+                      GestureDetector(
+                          onTap: () {
+                            indexChangeNotifier.value = 4;
+                            ChangeNotifier();
+                          },
+                          child: const Text('View All')),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios_outlined,
+                        size: 20,
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
 
             SizedBox(
@@ -70,6 +93,19 @@ class _ProfileState extends State<Profile> {
 
             /// POPULAR SERVICE LIST
             ServiceList(),
+            const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    'Celebrations',
+                    style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  )),
+            ),
+            Provider.of<CelebrationProvider>(context).celebrationSmallContainer,
           ],
         ),
       ),

@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:bloc_volunteer_service/presentaion/splashscren/splash_screen_copy.dart';
+import 'package:bloc_volunteer_service/provider/celebration/celebrationProvider.dart';
 import 'package:bloc_volunteer_service/provider/chat/ChatProvider.dart';
+import 'package:bloc_volunteer_service/provider/infomation/InformationProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -39,8 +41,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (BuildContext context) => ChatProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ChatProvider>(create: (_) => ChatProvider()),
+        ChangeNotifierProvider<InformationProvider>(
+            create: (_) => InformationProvider()),
+        ChangeNotifierProvider<CelebrationProvider>(
+            create: (_) => CelebrationProvider()),
+      ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
@@ -52,5 +60,19 @@ class MyApp extends StatelessWidget {
         home: const SplashScreen(),
       ),
     );
+
+    // ChangeNotifierProvider(
+    //   create: (BuildContext context) => ChatProvider(),
+    //   child: GetMaterialApp(
+    //     debugShowCheckedModeBanner: false,
+    //     title: 'Flutter Demo',
+    //     theme: ThemeData(
+    //         scaffoldBackgroundColor: backgroundColor,
+    //         backgroundColor: backgroundColor,
+    //         primarySwatch: Colors.blue,
+    //         platform: TargetPlatform.iOS),
+    //     home: const SplashScreen(),
+    //   ),
+    // );
   }
 }

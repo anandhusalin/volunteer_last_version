@@ -24,50 +24,37 @@ class _ServiceListState extends State<ViewAllServiceList> {
   List viewAll = [];
 
   @override
-  void initState() {
-    super.initState();
-    viewAllService.getDataViewAll().then((value) {
-      setState(() {
-        _viewAllModel = value;
-
-        isLoading = false;
-
-        print("service");
-
-        print(_viewAllModel!.data![0][0].imageName);
-        print("service");
-        viewAll = viewAllService.viewAll;
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? const CircularProgressIndicator()
-        : GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: viewAll.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
-            itemBuilder: (context, index) => GestureDetector(
+    return FutureBuilder<ViewAllModel>(
+        future: viewAllService.getDataViewAll(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data!.data![0];
+            return GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: data.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 4.0,
+                  mainAxisSpacing: 4.0),
+              itemBuilder: (context, index) => GestureDetector(
                 onTap: () async {
-                  if (_viewAllModel!.data![0][index].user == false) {
+                  print(data[index].user);
+                  if (data[index].user == false) {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => TaskPage(
-                                  ServiceId: _viewAllModel!.data![0][index].id,
+                                  ServiceId: data[index].id,
                                 )));
                   } else {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => Chat(
-                                  serviceId: _viewAllModel!.data![0][index].id,
-                                  serviceTitle:
-                                      _viewAllModel!.data![0][index].taskTitle,
+                                  serviceId: data[index].id,
+                                  serviceTitle: data[index].taskTitle,
                                 )));
                   }
                 },
@@ -81,10 +68,9 @@ class _ServiceListState extends State<ViewAllServiceList> {
                       Expanded(
                         flex: 3,
                         child: Image.network(
-                          _viewAllModel!.data![0][index].imageName != null
-                              ? _viewAllModel!.data![0][index].imageName
-                                  .toString()
-                              : _viewAllModel!.misc!.imagePlaceholder
+                          data[index].imageName != null
+                              ? data[index].imageName.toString()
+                              : snapshot.data!.misc!.imagePlaceholder
                                   .toString(),
                           fit: BoxFit.fill,
                           errorBuilder: (context, error, stackTrace) {
@@ -108,13 +94,18 @@ class _ServiceListState extends State<ViewAllServiceList> {
                                 colorOfText: Colors.white,
                                 maxlines: true,
                                 size: 13,
-                                text1: _viewAllModel!.data![0][index].taskTitle!
-                                    .toString()),
+                                text1: data[index].taskTitle!.toString()),
                           ),
                         ),
                       )
                     ]),
                   ),
-                )));
+                ),
+              ),
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 }

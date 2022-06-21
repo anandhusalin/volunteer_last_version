@@ -170,61 +170,6 @@ class ApiService {
     return celebrationDetailModel;
   }
 
-  //get information data
-  //stream
-
-  Stream<ServiceInformationModel> getInformationDataO(ser_id) async* {
-    print("dsadsdads");
-    var serviceInformationModel;
-    try {
-      var response = await gatData('/getServiceInformation/$ser_id');
-      inspect(response);
-      if (response.statusCode == 200) {
-        var jsonString = response.body;
-        var jsonMap = json.decode(jsonString);
-        serviceInformationModel = ServiceInformationModel.fromJson(jsonMap);
-      }
-    } catch (e) {
-      yield* serviceInformationModel;
-    }
-    yield* serviceInformationModel;
-  }
-
-  //end
-  Future<ServiceInformationModel> getInformationData(ser_id) async {
-    var serviceInformationModel;
-    try {
-      var response = await gatData('/getServiceInformation/$ser_id');
-      if (response.statusCode == 200) {
-        var jsonString = response.body;
-        var jsonMap = json.decode(jsonString);
-        serviceInformationModel = ServiceInformationModel.fromJson(jsonMap);
-      }
-    } catch (e) {
-      return serviceInformationModel;
-    }
-    return serviceInformationModel;
-  }
-
-//assign to task
-  Future<bool> assignTaskUser(task_id) async {
-    int user_id = await box.read('user_id');
-    var data = {
-      'assignee_id': user_id.toString(),
-      'task_id': task_id.toString(),
-      'comments': 'Task assigned'
-    };
-    // print(data);
-    var response = await postData(data, '/assign-user-task', false);
-    // inspect(response);
-    var body = json.decode(response.body);
-    if (response.statusCode == 200 && body['status'] == 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
 //by anandhu
 
   Future<Object> getRequestToVolunteer(id) async {
@@ -255,7 +200,7 @@ class ApiService {
     var response = await postData(data, '/join-service', false);
     var body = json.decode(response.body);
     print("response");
-    print(response.body);
+    print(response);
 
     if (response.statusCode == 200 && body['status'] == 1) {
       return true;

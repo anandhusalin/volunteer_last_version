@@ -28,12 +28,15 @@ class BannerCard extends StatelessWidget {
           const SizedBox(
             width: 10,
           ),
-          SizedBox(
+          Container(
               height: 150,
               width: 120,
-              child: Image.asset(
-                url,
-                fit: BoxFit.fill,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  url,
+                  fit: BoxFit.fill,
+                ),
               )),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

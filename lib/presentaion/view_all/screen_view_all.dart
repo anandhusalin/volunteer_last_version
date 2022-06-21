@@ -1,12 +1,19 @@
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:bloc_volunteer_service/model/celebration/celebrationSliderModel.dart';
+import 'package:bloc_volunteer_service/model/view_all_service_model.dart';
+import 'package:bloc_volunteer_service/presentaion/nottifications/text_input.dart';
+import 'package:bloc_volunteer_service/presentaion/service_info/screen_service_info.dart';
 import 'package:bloc_volunteer_service/presentaion/view_all/widgets/view_all_listing_services.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
+import 'package:bloc_volunteer_service/presentaion/widgets/chat.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/service_list.dart';
+import 'package:bloc_volunteer_service/provider/celebration/celebrationProvider.dart';
 import 'package:bloc_volunteer_service/services/apiService.dart';
+import 'package:bloc_volunteer_service/services/view_all_service.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/moving_card.dart';
 
 class ViewAll extends StatefulWidget {
@@ -18,48 +25,6 @@ class ViewAll extends StatefulWidget {
 
 class _ViewAllState extends State<ViewAll> {
   int index = 0;
-
-  Widget movingCard() {
-    return FutureBuilder<CelebrationSliderModel>(
-        future: ApiService().getCelebrationList(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.data!.isNotEmpty) {
-            var items = snapshot.data!.data;
-            return CarouselSlider(
-                items: [
-                  for (var i = 0; i < items!.length; i++)
-                    GestureDetector(
-                      onTap: () {},
-                      child: BannerCard(
-                        url: 'images/Servicebnr.jpg',
-                        item: items[i],
-                      ),
-                    ),
-                ],
-                options: CarouselOptions(
-                  height: 170,
-                  aspectRatio: 16 / 9,
-                  viewportFraction: 0.8,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  autoPlayInterval: const Duration(seconds: 3),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enlargeCenterPage: true,
-                  onPageChanged: (value, _) {
-                    setState(() {
-                      index = value;
-                    });
-                  },
-                  scrollDirection: Axis.horizontal,
-                ));
-          } else {
-            return SizedBox();
-          }
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +41,8 @@ class _ViewAllState extends State<ViewAll> {
               const SizedBox(
                 height: 30,
               ),
-              movingCard(),
+              Provider.of<CelebrationProvider>(context)
+                  .celebrationMainContainer,
               const SizedBox(
                 height: 30,
               ),
@@ -87,12 +53,98 @@ class _ViewAllState extends State<ViewAll> {
                     fontSize: 28,
                     fontWeight: FontWeight.bold),
               ),
-              const ViewAllServiceList(),
+              // const ViewAllServiceList(),
               // const ServiceList()
+              buildListWidget(),
             ],
           ),
         ),
       ),
     );
+  }
+
+  buildListWidget() {
+    return FutureBuilder<ViewAllModel>(
+        future: ViewAllServices().getDataViewAll(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data!.data![0];
+            return GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: data.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 4.0,
+                  mainAxisSpacing: 4.0),
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () async {
+                  print(data[index].user);
+                  if (data[index].user == false) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TaskPage(
+                                  ServiceId: data[index].id,
+                                )));
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Chat(
+                                  serviceId: data[index].id,
+                                  serviceTitle: data[index].taskTitle,
+                                )));
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.black)),
+                    child: Column(children: [
+                      Expanded(
+                        flex: 3,
+                        child: Image.network(
+                          data[index].imageName != null
+                              ? data[index].imageName.toString()
+                              : snapshot.data!.misc!.imagePlaceholder
+                                  .toString(),
+                          fit: BoxFit.fill,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.home);
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(10),
+                                  bottomRight: Radius.circular(10))),
+                          width: MediaQuery.of(context).size.width,
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 5, top: 3),
+                            child: TextInput(
+                                colorOfText: Colors.white,
+                                maxlines: true,
+                                size: 13,
+                                text1: data[index].taskTitle!.toString()),
+                          ),
+                        ),
+                      )
+                    ]),
+                  ),
+                ),
+              ),
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 }

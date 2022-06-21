@@ -7,11 +7,14 @@ import 'package:bloc_volunteer_service/presentaion/mainpage/widgets/bottom_nav.d
 import 'package:bloc_volunteer_service/presentaion/view_all/screen_view_all.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/category_section.dart';
+import 'package:bloc_volunteer_service/presentaion/widgets/celebration/celebrationWidget.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/service_list.dart';
+import 'package:bloc_volunteer_service/provider/celebration/celebrationProvider.dart';
 import 'package:bloc_volunteer_service/services/apiService.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/moving_card.dart';
 import '../widgets/search_bar.dart';
@@ -27,64 +30,27 @@ class _ScreenHomeState extends State<ScreenHome>
     with SingleTickerProviderStateMixin {
   bool isLoading = true;
 
-  CelebrationModel? celebrationModel;
+  Future<CelebrationModel>? celebrationModel;
   List celebration = [];
+  CelebrationSliderModel? _celebrationSliderModel;
 
   int index = 0;
+  @override
+  void initState() {
+    super.initState();
+
+    loadData();
+  }
+
+  loadData() async {
+    _celebrationSliderModel = await ApiService().getCelebrationList();
+  }
 
   /// CELEBRATION SYSTEM  MOVING CARD
 
-  Widget movingCard() {
-    return FutureBuilder<CelebrationSliderModel>(
-        future: ApiService().getCelebrationList(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.data!.isNotEmpty) {
-            var items = snapshot.data!.data;
-            return CarouselSlider(
-                items: [
-                  for (var i = 0; i < items!.length; i++)
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CelebrationSystemDetail(
-                                      items: items[i],
-                                    )));
-                      },
-                      child: BannerCard(
-                        url: 'images/Servicebnr.jpg',
-                        item: items[i],
-                      ),
-                    ),
-                ],
-                options: CarouselOptions(
-                  height: 170,
-                  aspectRatio: 16 / 9,
-                  viewportFraction: 0.8,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  autoPlayInterval: const Duration(seconds: 3),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enlargeCenterPage: true,
-                  onPageChanged: (value, _) {
-                    setState(() {
-                      index = value;
-                    });
-                  },
-                  scrollDirection: Axis.horizontal,
-                ));
-          } else {
-            return SizedBox();
-          }
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: const PreferredSize(
@@ -104,7 +70,8 @@ class _ScreenHomeState extends State<ScreenHome>
 
               /// CELEBRATION SYSTEM
 
-              movingCard(),
+              Provider.of<CelebrationProvider>(context)
+                  .celebrationMainContainer,
 
               /// POPULAR SERVICE HEADING
 
@@ -132,6 +99,9 @@ class _ScreenHomeState extends State<ScreenHome>
               /// CATEGORY SECTION
 
               const CategorySection(),
+              const SizedBox(height: 10),
+              Provider.of<CelebrationProvider>(context)
+                  .celebrationSmallContainer,
             ],
           ),
         ));

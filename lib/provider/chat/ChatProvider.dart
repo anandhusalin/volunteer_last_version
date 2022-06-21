@@ -8,6 +8,7 @@ class ChatProvider with ChangeNotifier {
   ChatModel? _chatList;
   ChatModel? get chatList => _chatList;
 
+  int loadRound = 1;
   bool _busy = false;
   bool get busy => _busy;
   setBusy(bool value) {
@@ -15,9 +16,16 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  bool _isLoad = false;
+  bool get isLoad => _isLoad;
+  setIsLoad(bool value) {
+    _isLoad = value;
+    notifyListeners();
+  }
+
   // get chat list
   Future<ChatModel?> getChat(serviceId) async {
-    setBusy(true);
+    if (loadRound == 1) setBusy(true);
     var response = await ApiService().gatData('/get-chat/$serviceId');
     if (response.statusCode == 200) {
       var jsonMap = jsonDecode(response.body);
@@ -26,6 +34,7 @@ class ChatProvider with ChangeNotifier {
       notifyListeners();
       setBusy(false);
     }
+    loadRound++;
     return _chatList;
   }
 
@@ -37,14 +46,14 @@ class ChatProvider with ChangeNotifier {
       'message': message,
       'sent_on': now.toIso8601String()
     };
-    setBusy(true);
+    setIsLoad(true);
     var response = await ApiService().postData(data, '/start-chat', false);
     var body = json.decode(response.body);
     if (response.statusCode == 200 && body['status'] == 1) {
-      setBusy(false);
+      setIsLoad(false);
       return true;
     } else {
-      setBusy(false);
+      setIsLoad(false);
       return false;
     }
   }

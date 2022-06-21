@@ -1,13 +1,19 @@
+import 'dart:developer';
+
 import 'package:bloc_volunteer_service/core/colors/colors.dart';
 import 'package:bloc_volunteer_service/model/serviceInformation/serviceInformationModel.dart';
+import 'package:bloc_volunteer_service/presentaion/addtask/requirement_screen.dart';
 import 'package:bloc_volunteer_service/presentaion/service_info/widget/serviceTaskTile.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/progressWidget.dart';
+import 'package:bloc_volunteer_service/provider/infomation/InformationProvider.dart';
 import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 
 class InfoScreen extends StatefulWidget {
   final serviceId;
@@ -27,15 +33,14 @@ class _InfoScreenState extends State<InfoScreen> {
   int volunteerPageIndex = 1;
   int taskPageIndex = 1;
   final box = GetStorage();
-  late int user_id;
+  late int user_id = 0;
   Future<ServiceInformationModel>? _serviceInformationModel;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     loadData();
-    // _serviceInformationModel =
-    //     ApiService().getInformationData(widget.serviceId);
     _pageController.addListener(() {
       setState(() {
         volunteerPageIndex = _pageController.page!.toInt() + 1;
@@ -50,13 +55,10 @@ class _InfoScreenState extends State<InfoScreen> {
 
   loadData() async {
     user_id = await box.read('user_id');
-  }
-
-  @override
-  void didChangeDependencies() {
-    // _serviceInformationModel =
-    //     ApiService().getInformationData(widget.serviceId);
-    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<InformationProvider>(context, listen: false)
+          .getInfo(widget.serviceId);
+    });
   }
 
   @override
@@ -71,24 +73,31 @@ class _InfoScreenState extends State<InfoScreen> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
+      key: _scaffoldKey,
       appBar: const CustomAppBar(title: "Information"),
-      body: FutureBuilder<ServiceInformationModel>(
-          future: ApiService().getInformationData(widget.serviceId),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              var data = snapshot.data!.data;
-              return ListView(
+      body: Consumer<InformationProvider>(builder: (context, value, child) {
+        return !value.loading
+            ? ListView(
                 children: [
-                  buildVolunteerSectionWidget(width, height, data!.volunteers),
-                  buildTaskSectionWidget(width, height, data.task),
+                  if (value.infoList != null)
+                    buildVolunteerSectionWidget(
+                        width, height, value.infoList!.data!.volunteers),
+                  const Divider(
+                    thickness: 1,
+                    height: 5,
+                    color: Colors.grey,
+                    // indent: 5,
+                    // endIndent: 5,
+                  ),
+                  if (value.infoList != null)
+                    buildTaskSectionWidget(
+                        width, height, value.infoList!.data!.task, value),
                 ],
-              );
-            } else {
-              return const Center(
+              )
+            : const Center(
                 child: CircularProgressIndicator(),
               );
-            }
-          }),
+      }),
     );
   }
 
@@ -148,7 +157,7 @@ class _InfoScreenState extends State<InfoScreen> {
     );
   }
 
-  buildTaskSectionWidget(double width, double height, taskItem) {
+  buildTaskSectionWidget(double width, double height, taskItem, providerVal) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       child: Column(
@@ -168,7 +177,7 @@ class _InfoScreenState extends State<InfoScreen> {
           ),
           Divider(),
           Container(
-            height: height * 0.75,
+            height: height * 0.70,
             width: width - 20,
             child: PageView(
               key: widget.key,
@@ -176,8 +185,8 @@ class _InfoScreenState extends State<InfoScreen> {
               scrollDirection: Axis.horizontal,
               children: List.generate(
                   taskItem.pageCount,
-                  (index) =>
-                      buildTaskListWidget(width, taskItem.taskList[index])),
+                  (index) => buildTaskListWidget(
+                      width, taskItem.taskList[index], providerVal)),
             ),
           ),
           Row(
@@ -185,7 +194,11 @@ class _InfoScreenState extends State<InfoScreen> {
             children: [
               buildPagerWidget(_pageControllerTask, taskPageIndex),
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          RequirementsScreen(serviceId: widget.serviceId)));
+                },
                 icon: const Icon(
                   Icons.add,
                   size: 14,
@@ -205,7 +218,7 @@ class _InfoScreenState extends State<InfoScreen> {
     );
   }
 
-  buildTaskListWidget(double width, taskData) {
+  buildTaskListWidget(double width, taskData, providerVal) {
     return Column(
       children: List<Widget>.generate(
         taskData.length,
@@ -225,12 +238,72 @@ class _InfoScreenState extends State<InfoScreen> {
             taskProgress: value.progress ?? 0,
             serviceTaskTileAction: () async {
               if (user_id == value.assigneeId) {
-                print('exit');
-              } else {
-                var res = await ApiService().assignTaskUser(value.taskId);
+                var res = await providerVal.removeTaskUser(value.taskId);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Colors.red,
+                  content: Container(
+                    height: 50,
+                    width: width,
+                    color: Colors.red,
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Removing....',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Container(
+                          height: 30,
+                          width: 30,
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ));
                 if (res) {
                   loadData();
-                  setState(() {});
+                }
+              } else {
+                var res = await providerVal.assignTaskUser(value.taskId);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: primaryColor,
+                  content: Container(
+                    height: 50,
+                    width: width,
+                    color: primaryColor,
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Assigning....',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Container(
+                          height: 30,
+                          width: 30,
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ));
+                if (res) {
+                  loadData();
                 }
               }
             },
@@ -255,13 +328,14 @@ class _InfoScreenState extends State<InfoScreen> {
       child: Center(
         child: TextField(
           decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(10),
             suffixIcon: IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
                 /* Clear the search field */
               },
             ),
-            hintText: '\t\tSearch...',
+            hintText: 'Search...',
             border: InputBorder.none,
           ),
         ),

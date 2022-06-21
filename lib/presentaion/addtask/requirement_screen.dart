@@ -14,17 +14,17 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 
 class RequirementsScreen extends StatefulWidget {
-  final String title;
-  final String desc;
-  final String estDur;
-  final String volLimit;
+  final title;
+  final desc;
+  final estDur;
+  final volLimit;
   final serviceId;
   RequirementsScreen(
       {Key? key,
-      required this.title,
-      required this.desc,
-      required this.estDur,
-      required this.volLimit,
+      this.title,
+      this.desc,
+      this.estDur,
+      this.volLimit,
       required this.serviceId})
       : super(key: key);
 

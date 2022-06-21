@@ -4,12 +4,14 @@ import 'dart:io';
 import 'package:bloc_volunteer_service/core/constant.dart';
 import 'package:bloc_volunteer_service/model/profile/profileModel.dart';
 import 'package:bloc_volunteer_service/presentaion/edit_profile/screen_edit_profile.dart';
+import 'package:bloc_volunteer_service/presentaion/loginpage/login_page.dart';
 import 'package:bloc_volunteer_service/presentaion/profile_edit_password/passsword_edit.dart';
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
 import 'package:bloc_volunteer_service/services/apiService.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -27,6 +29,7 @@ class _ViewProfileState extends State<ViewProfile> {
   bool isLoading = false;
   File? imageFile;
   final picker = ImagePicker();
+  final box = GetStorage();
 
   uploadProfileImage() async {
     final pickedFile = await picker.pickImage(
@@ -56,6 +59,13 @@ class _ViewProfileState extends State<ViewProfile> {
     }
   }
 
+  signOut() {
+    box.erase();
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => Login()),
+        (Route<dynamic> route) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +88,7 @@ class _ViewProfileState extends State<ViewProfile> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   "Hello,",
                                   style: TextStyle(
                                       color: backgroundColor2,
@@ -251,7 +261,29 @@ class _ViewProfileState extends State<ViewProfile> {
                                 Column(
                                   children: [
                                     IconButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          showDialog(
+                                              builder: (ctxt) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Do you want to logout?'),
+                                                  actions: <Widget>[
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop(false);
+                                                      },
+                                                      child: const Text('No'),
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed: signOut,
+                                                      child: const Text('Yes'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                              context: context);
+                                        },
                                         icon:
                                             const Icon(Icons.logout_outlined)),
                                     const Text(
@@ -297,7 +329,7 @@ class _ViewProfileState extends State<ViewProfile> {
     );
   }
 
-  Stack buildProfileIcon(Data profileData) {
+  Stack buildProfileIcon(profileData) {
     return Stack(
       alignment: AlignmentDirectional.center,
       clipBehavior: Clip.none,

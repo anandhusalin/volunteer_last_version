@@ -40,7 +40,7 @@ class ServiceTaskTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '\t\t\ $taskStatus',
+            '\t\t$taskStatus',
             // isAssignee ? '\t\t\tOngoing' : '\t\t\tPending',
             style: const TextStyle(
               fontSize: 20,
@@ -51,9 +51,9 @@ class ServiceTaskTile extends StatelessWidget {
           const Divider(
             height: 5,
             thickness: 1.0,
-            indent: 6.0,
+            indent: 10.0,
             color: Colors.grey,
-            endIndent: 20,
+            endIndent: 15,
           ),
           Row(
             children: [
@@ -81,10 +81,14 @@ class ServiceTaskTile extends StatelessWidget {
                   ),
                 ),
               ),
-              ProgressWidget(progress: taskProgress)
+              ProgressWidget(progress: taskProgress),
+              SizedBox(width: 15)
             ],
           ),
-          buildTaskUserTile()
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: buildTaskUserTile(),
+          )
         ],
       ),
     );
@@ -135,6 +139,7 @@ class ServiceTaskTile extends StatelessWidget {
                   : Image.asset('images/support.png'),
             ),
           ),
+        SizedBox(width: 15)
       ],
     );
   }

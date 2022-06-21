@@ -22,6 +22,14 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
+  // task pager
+
+  PageController _pageControllerTask = PageController(
+    initialPage: 0,
+  );
+
+  int taskPageIndex = 1;
+  //end
   int index = 0;
   final ServiceInfoService serviceInfoService = ServiceInfoService();
   bool isLoading = false;
@@ -36,6 +44,18 @@ class _TaskPageState extends State<TaskPage> {
     super.initState();
     user_id = box.read('user_id');
     serviceInfoDetails = serviceInfoService.getServiceInfo(widget.ServiceId);
+
+    _pageControllerTask.addListener(() {
+      setState(() {
+        taskPageIndex = _pageControllerTask.page!.toInt() + 1;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageControllerTask.dispose();
+    super.dispose();
   }
 
   Widget movingCard(images, misc) {
@@ -107,6 +127,7 @@ class _TaskPageState extends State<TaskPage> {
           builder: (context, snapshot) {
             if ((snapshot.hasData)) {
               var data = snapshot.data?.data![0];
+              int? pageCount = snapshot.data!.taskData!.task!.pageCount;
               return SingleChildScrollView(
                 child: Column(
                   children: [
@@ -297,13 +318,14 @@ class _TaskPageState extends State<TaskPage> {
                     const SizedBox(
                       height: 20,
                     ),
-                    if (snapshot.data!.taskData!.length > 0)
+                    //  ##################################################################
+                    if (pageCount != null)
                       const Divider(
                         thickness: 1,
                         color: Colors.grey,
                       ),
                     //list'
-                    if (snapshot.data!.taskData!.length > 0)
+                    if (pageCount != null)
                       const Text(
                         'All Task',
                         style: TextStyle(
@@ -313,29 +335,10 @@ class _TaskPageState extends State<TaskPage> {
                           color: primaryColor,
                         ),
                       ),
-                    if (snapshot.data!.taskData!.length > 0)
-                      Column(
-                        children: List.generate(
-                          snapshot.data!.taskData!.length,
-                          (index) {
-                            var value = snapshot.data!.taskData![index];
-                            return ServiceTaskTile(
-                              isUserId: user_id,
-                              isUserOption: false,
-                              isAssigneeId: 0,
-                              taskStatus: value.assigneeId != null
-                                  ? 'Ongoing'
-                                  : 'Pending',
-                              taskTitle: value.subtaskTitle.toString(),
-                              taskAssignee: value.assignName ?? 'UNASSIGNED',
-                              taskProgress: value.progress ?? 0,
-                              serviceTaskTileAction: () {},
-                            );
-                          },
-                        ),
-                      ),
 
-                    //end
+                    buildTaskPager(height, width, pageCount, snapshot),
+                    buildPagerWidget(_pageControllerTask, taskPageIndex),
+                    //end ########################################
                     const Divider(
                       thickness: 1,
                       color: Colors.grey,
@@ -361,6 +364,83 @@ class _TaskPageState extends State<TaskPage> {
               );
             }
           }),
+    );
+  }
+
+  Container buildTaskPager(double height, double width, int? pageCount,
+      AsyncSnapshot<ServiceInfoModel> snapshot) {
+    return Container(
+      height: height * 0.69,
+      width: width - 20,
+      margin: EdgeInsets.symmetric(horizontal: 15),
+      child: PageView(
+        key: widget.key,
+        controller: _pageControllerTask,
+        scrollDirection: Axis.horizontal,
+        children: List.generate(pageCount!, (index) {
+          var value = snapshot.data!.taskData!.task!.taskList![index];
+          return Column(
+            children: List.generate(value.length, (index) {
+              var data = value[index];
+              return ServiceTaskTile(
+                isUserId: user_id,
+                isUserOption: false,
+                isAssigneeId: 0,
+                taskStatus: data.assigneeId != null ? 'Ongoing' : 'Pending',
+                taskTitle: data.subtaskTitle.toString(),
+                taskAssignee: data.assignName ?? 'UNASSIGNED',
+                taskProgress: data.progress ?? 0,
+                serviceTaskTileAction: () {},
+              );
+            }),
+          );
+        }),
+      ),
+    );
+  }
+
+  buildPagerWidget(pageController, index) {
+    return Container(
+      width: 85,
+      margin: EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 0.5,
+          color: Colors.grey,
+        ),
+      ),
+      height: 25,
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () {
+              pageController.animateToPage(pageController.page!.toInt() - 1,
+                  duration: Duration(milliseconds: 400), curve: Curves.easeIn);
+            },
+            child: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 18,
+            ),
+          ),
+          const VerticalDivider(
+            color: Colors.grey,
+          ),
+          Text('$index'),
+          const VerticalDivider(
+            color: Colors.grey,
+          ),
+          GestureDetector(
+            onTap: () {
+              pageController.animateToPage(pageController.page!.toInt() + 1,
+                  duration: Duration(milliseconds: 400), curve: Curves.easeIn);
+            },
+            child: const Icon(
+              Icons.arrow_forward_ios,
+              size: 18,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

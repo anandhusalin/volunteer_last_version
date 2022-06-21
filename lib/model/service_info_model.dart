@@ -24,7 +24,7 @@ class ServiceInfoModel {
   int? code;
   String? message;
   List<Datum>? data;
-  List<TaskDatum>? taskData;
+  TaskData? taskData;
   Misc? misc;
 
   factory ServiceInfoModel.fromJson(Map<String, dynamic> json) =>
@@ -33,8 +33,7 @@ class ServiceInfoModel {
         code: json["code"],
         message: json["message"],
         data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-        taskData: List<TaskDatum>.from(
-            json["task_data"].map((x) => TaskDatum.fromJson(x))),
+        taskData: TaskData.fromJson(json["task_data"]),
         misc: Misc.fromJson(json["misc"]),
       );
 
@@ -43,7 +42,7 @@ class ServiceInfoModel {
         "code": code,
         "message": message,
         "data": List<dynamic>.from(data!.map((x) => x.toJson())),
-        "task_data": List<dynamic>.from(taskData!.map((x) => x.toJson())),
+        "task_data": taskData!.toJson(),
         "misc": misc!.toJson(),
       };
 }
@@ -116,8 +115,46 @@ class Misc {
       };
 }
 
-class TaskDatum {
-  TaskDatum({
+class TaskData {
+  TaskData({
+    this.task,
+  });
+
+  Task? task;
+
+  factory TaskData.fromJson(Map<String, dynamic> json) => TaskData(
+        task: Task.fromJson(json["task"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "task": task!.toJson(),
+      };
+}
+
+class Task {
+  Task({
+    this.pageCount,
+    this.taskList,
+  });
+
+  int? pageCount;
+  List<List<TaskList>>? taskList;
+
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
+        pageCount: json["pageCount"],
+        taskList: List<List<TaskList>>.from(json["taskList"].map(
+            (x) => List<TaskList>.from(x.map((x) => TaskList.fromJson(x))))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "pageCount": pageCount,
+        "taskList": List<dynamic>.from(
+            taskList!.map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
+      };
+}
+
+class TaskList {
+  TaskList({
     this.taskId,
     this.serviceId,
     this.assigneeId,
@@ -135,23 +172,23 @@ class TaskDatum {
   String? subtaskDesc;
   String? assignName;
 
-  factory TaskDatum.fromJson(Map<String, dynamic> json) => TaskDatum(
+  factory TaskList.fromJson(Map<String, dynamic> json) => TaskList(
         taskId: json["task_id"],
         serviceId: json["service_id"],
-        assigneeId: json["assignee_id"],
-        progress: json["progress"],
+        assigneeId: json["assignee_id"] == null ? null : json["assignee_id"],
+        progress: json["progress"] == null ? null : json["progress"],
         subtaskTitle: json["subtask_title"],
         subtaskDesc: json["subtask_desc"],
-        assignName: json["assignName"],
+        assignName: json["assignName"] == null ? null : json["assignName"],
       );
 
   Map<String, dynamic> toJson() => {
         "task_id": taskId,
         "service_id": serviceId,
-        "assignee_id": assigneeId,
-        "progress": progress,
+        "assignee_id": assigneeId == null ? null : assigneeId,
+        "progress": progress == null ? null : progress,
         "subtask_title": subtaskTitle,
         "subtask_desc": subtaskDesc,
-        "assignName": assignName,
+        "assignName": assignName == null ? null : assignName,
       };
 }

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc_volunteer_service/presentaion/widgets/app_bar_widgets.dart';
+import 'package:bloc_volunteer_service/provider/celebration/celebrationProvider.dart';
 import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,6 +13,7 @@ import 'package:bloc_volunteer_service/presentaion/addtask/requirement_screen.da
 import 'package:bloc_volunteer_service/services/service_services.dart';
 // import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({Key? key}) : super(key: key);
@@ -73,7 +75,6 @@ class _AddScreenState extends State<AddScreen> {
       setState(() {
         isLoading = false;
       });
-      inspect(value);
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => RequirementsScreen(
               desc: solutionDescriptionController.text,
@@ -229,12 +230,18 @@ class _AddScreenState extends State<AddScreen> {
         child: SingleChildScrollView(
           //reverse: true,
           child: Container(
-            margin: const EdgeInsets.all(20),
+            // margin: const EdgeInsets.all(20),
             child: Column(
               children: [
+                const SizedBox(height: 10),
+                Provider.of<CelebrationProvider>(context)
+                    .celebrationSmallContainer,
+                const SizedBox(height: 10),
+
                 /// SERVICE DETAILS PART
 
                 Container(
+                  margin: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.grey.shade200),
